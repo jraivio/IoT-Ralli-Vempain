@@ -18,11 +18,13 @@
 #define DHTTYPE DHT11   // DHT 11
 DHT dht(DHTPIN, DHTTYPE);
 
+// initialization to enable multithreading features by using millis() functions  
 // Sensor update interval
-unsigned long previousMillis = 0;      // will store last time sensor updated
+unsigned long previousMillis = 0;       // will store last time sensor updated
 // the follow variables is a long because the time, measured in miliseconds,
 // will quickly become a bigger number than can be stored in an int.
-const long interval = 10000;    
+const long interval = 10000;            // Sensor data sending interval
+
   
 // Json parser lib 
 // Copyright Benoit Blanchon 2014-2016
@@ -32,6 +34,27 @@ const long interval = 10000;
 // https://github.com/bblanchon/ArduinoJson
 // If you like this project, please add a star!
 #include <ArduinoJson.h>
+const char* command;
+
+/* e.g json format {"command":"drive","mdata":[1,150,500]}
+* where course is forward, speed value is 150 and 500 ms driving period
+* Speed range 100 - 255 is recommended for this setup
+* e.g curl via esp-link >curl -i -X POST  http://192.168.0.171/console/send?text=%7B%22command%22%3A%22drive%22%2C%22mdata%22%3A%5B1%2C150%2C500%5D%7D
+* Example json formats 
+* drive forward {"command":"drive","mdata":[1,100,500]}
+* drive backward {"command":"drive","mdata":[2,100,500]}
+* turn right, direction forward {"command":"drive","mdata":[1,100,500]}
+* turn left, direction forward {"command":"drive","mdata":[1,100,500]}
+* stop with delay, 5 sec {"command":"drive","mdata":[0,0,5000]}
+* full stop {"command":"drive","mdata":[,,]}
+* Control LED digital output pins  
+* e.g pin 12 on, not blinking {"command":"lights","data":[12,1,0]}
+* e.g curl via esp-link >curl -i -X POST http://192.168.0.171/console/send?text=%7B%22command%22%3A%22lights%22%2C%22data%22%3A%5B12%2C1%2C0%5D%7D
+* UTF-8 encoder tool http://meyerweb.com/eric/tools/dencoder/
+* e.g pin 12 on, blinking with 500 ms delay {"command":"lights","data":[12,1,500]}
+* e.g curl via esp-link >curl -i -X POST http://192.168.0.171/console/send?text=%7B%22command%22%3A%22lights%22%2C%22data%22%3A%5B12%2C1%2C500%5D%7D
+*/
+
 
 // Serial data handling, global variables
 String inputString = "";         // a string to hold incoming data
@@ -45,9 +68,25 @@ int in2 = 5;
 int in3 = 6;
 int in4 = 7;
 int enB = 3;
+boolean motor_active = false;
+// for motor delay
+unsigned long mpreviousMillis = 0;      // will store last time motor delay update
+int course; // direction
+int mspeed; // motor speed
+int mdelay; // motor delay
 
+// light blinking 
+boolean pin13_blinking = false;
+boolean pin12_blinking = false;
+boolean pin11_blinking = false;
+int pin13_delay;
+int pin12_delay;
+int pin11_delay;
+unsigned long pin13_previousMillis = 0;      // will store last time light delay update
+unsigned long pin12_previousMillis = 0;      // will store last time light delay update
+unsigned long pin11_previousMillis = 0;      // will store last time light delay update
 
-void Sensor_DHT() {
+void Json_Report_Sensor_DHT() {
 
     // DHT functions
     // Reading temperature or humidity takes about 250 milliseconds!
@@ -86,84 +125,56 @@ void Sensor_DHT() {
     return;
 }
 
-void Motor_Forward(int mspeed, int mdelay)
+void Json_Report_Sensor_Distance(){}  // TBD
+void Json_Report_Sensor_ACC(){}       // TBD
+void Json_Report_Sensor_Edge() {}     // TBD
+void Json_Report_Sensor_RFID() {}     // TBD
+
+void Motor()
 {
-  // this function will run the motors across the range of possible speeds
-  // note that maximum speed is determined by the motor itself and the operating voltage
-  // the PWM values sent by analogWrite() are fractions of the maximum speed possible 
-  // by your hardware
-  // turn on motors
-  digitalWrite(in1, HIGH);
-  digitalWrite(in2, LOW);  
-  digitalWrite(in3, HIGH);
-  digitalWrite(in4, LOW); 
-  analogWrite(enA, mspeed);
-  analogWrite(enB, mspeed);
-  delay(mdelay);
-  // now turn off motors
-  digitalWrite(in1, LOW);
-  digitalWrite(in2, LOW);  
-  digitalWrite(in3, LOW);
-  digitalWrite(in4, LOW);  
+    // this function will run the motors across the range of possible speeds
+    // note that maximum speed is determined by the motor itself and the operating voltage
+    // the PWM values sent by analogWrite() are fractions of the maximum speed possible by your hardware
+    // Drive Forward
+    if (course == 1) {
+        digitalWrite(in1, HIGH); digitalWrite(in2, LOW); digitalWrite(in3, HIGH); digitalWrite(in4, LOW); 
+        analogWrite(enA, mspeed); analogWrite(enB, mspeed);
+        delay(mdelay);
+    }
+    // Drive Backward
+    else if (course == 2) {
+        digitalWrite(in1, LOW); digitalWrite(in2, HIGH); digitalWrite(in3, LOW); digitalWrite(in4, HIGH); 
+        analogWrite(enA, mspeed); analogWrite(enB, mspeed);
+        delay(mdelay);
+    }
+    // Turn Right, direction forward
+    else if (course == 3) {
+        digitalWrite(in1, LOW); digitalWrite(in2, LOW); digitalWrite(in3, HIGH); digitalWrite(in4, LOW); 
+        analogWrite(enA, mspeed); analogWrite(enB, mspeed);
+        delay(mdelay);
+    }
+    // Turn Left, direction forward
+    else if (course == 4) {
+        digitalWrite(in1, HIGH); digitalWrite(in2, LOW); digitalWrite(in3, LOW); digitalWrite(in4, LOW); 
+        analogWrite(enA, mspeed); analogWrite(enB, mspeed);
+        delay(mdelay);
+    }
+    // Stop with delay
+    else if (course == 0) {
+        // now turn off motors
+        digitalWrite(in1, LOW); digitalWrite(in2, LOW); digitalWrite(in3, LOW); digitalWrite(in4, LOW);  
+        delay(mdelay);
+    }
+    // now turn off motors
+    // clean up & return
+    digitalWrite(in1, LOW); digitalWrite(in2, LOW); digitalWrite(in3, LOW); digitalWrite(in4, LOW);
+    course = NULL;
+    mspeed = NULL;
+    mdelay = NULL;
+    motor_active = false;
+    return;
 }
 
-void Motor_Backward(int mspeed,int mdelay)
-{
-  digitalWrite(in1, LOW);
-  digitalWrite(in2, HIGH);  
-  digitalWrite(in3, LOW);
-  digitalWrite(in4, HIGH); 
-  analogWrite(enA, mspeed);
-  analogWrite(enB, mspeed);
-  delay(mdelay);
-  // now turn off motors
-  digitalWrite(in1, LOW);
-  digitalWrite(in2, LOW);  
-  digitalWrite(in3, LOW);
-  digitalWrite(in4, LOW);  
-}
-
-void Motor_Right(int mspeed,int mdelay)
-{
-  digitalWrite(in1, LOW);
-  digitalWrite(in2, LOW);  
-  digitalWrite(in3, HIGH);
-  digitalWrite(in4, LOW); 
-  analogWrite(enA, mspeed);
-  analogWrite(enB, mspeed);
-  delay(mdelay);
-  // now turn off motors
-  digitalWrite(in1, LOW);
-  digitalWrite(in2, LOW);  
-  digitalWrite(in3, LOW);
-  digitalWrite(in4, LOW);  
-}
-
-void Motor_Left(int mspeed,int mdelay)
-{
-  digitalWrite(in1, HIGH);
-  digitalWrite(in2, LOW);  
-  digitalWrite(in3, LOW);
-  digitalWrite(in4, LOW); 
-  analogWrite(enA, mspeed);
-  analogWrite(enB, mspeed);
-  delay(mdelay);
-  // now turn off motors
-  digitalWrite(in1, LOW);
-  digitalWrite(in2, LOW);  
-  digitalWrite(in3, LOW);
-  digitalWrite(in4, LOW);  
-}
-
-void Motor_Stop()
-{
-  // now turn off motors
-  digitalWrite(in1, LOW);
-  digitalWrite(in2, LOW);  
-  digitalWrite(in3, LOW);
-  digitalWrite(in4, LOW);  
-}
-  
 /*
   SerialEvent occurs whenever a new data comes in the
  hardware serial RX.  This routine is run between each
@@ -185,81 +196,60 @@ void serialEvent1() {
   }
 }
 
+
 void HandleIncommingJson () {
 
-    // JSon serial read
-    // print the string when a newline arrives:
-    StaticJsonBuffer<512> jsonInBuffer;                 
-    const char *JsonChar = inputString.c_str(); // 1 KB
-    JsonObject& root = jsonInBuffer.parseObject(JsonChar);
-    // Verify Json 
-    if (JsonChar!=NULL && !root.success()) {
+      StaticJsonBuffer<512> jsonInBuffer;                 
+      const char *JsonChar = inputString.c_str(); // 1 KB
+      JsonObject& root = jsonInBuffer.parseObject(JsonChar);
+      int pin;
+      int value;
+      int ldelay;
+      // Verify Json 
+      if (JsonChar!=NULL && !root.success()) {
         Serial.println("parseObject() failed: ");
         Serial.println(JsonChar);
-        // Clean buffer
-        JsonChar = NULL;
-        return;
-    } 
-    // Command to digital pins
-    // E.g Digital pin 13 High
-    // {"command":"digital","data":[13,1]}
-    // read from json
-
-    const char* command = root["command"];
-    int pin = root["data"][0];
-    int value = root["data"][1];
-    int course = root["mdata"][0];
-    int mspeed = root["mdata"][1];
-    int mdelay = root["mdata"][2];
-
-    // Control LED digital output pins 
-    if (command="digital") {
-          // e.g pin 12 on {"command":"digital","data":[12,1]}
-          // e.g curl via esp-link >curl -i -X POST http://192.168.0.171/console/send?text=%7B%22command%22%3A%22digital%22%2C%22data%22%3A%5B12%2C1%5D%7D
-          // decoder support http://meyerweb.com/eric/tools/dencoder/
-          if (value == 1){
-            digitalWrite(pin, HIGH);
-          }
-          // e.g pin 12 off {"command":"digital","data":[12,0]}
-          // e.g curl via esp-link >curl -i -X POST http://192.168.0.171/console/send?text=%7B%22command%22%3A%22digital%22%2C%22data%22%3A%5B12%2C0%5D%7D
-          // UFT-8 encoder support http://meyerweb.com/eric/tools/dencoder/
-          else if (value == 0){
-            digitalWrite(pin, LOW);
-          }
-    }
-    
-    // e.g json format {"command":"drive","mdata":[1,150,500]}
-    // where course is forward, speed value is 150 and 500 ms driving period
-    // Speed range 100 - 255 is recommended for this setup
-    // e.g curl via esp-link >curl -i -X POST  http://192.168.0.171/console/send?text=%7B%22command%22%3A%22drive%22%2C%22mdata%22%3A%5B1%2C150%2C500%5D%7D
-    if (command="drive") { 
-          // forward {"command":"drive","mdata":[1,100,500]}
-          if (course == 1){
-          Motor_Forward(mspeed,mdelay);
-          }
-          // backward {"command":"drive","mdata":[2,100,500]}
-          else if (course == 2){
-          Motor_Backward(mspeed,mdelay);
-          }
-          // right {"command":"drive","mdata":[3,100,500]}
-          else if (course == 3){
-          Motor_Right(mspeed,mdelay);
-          }
-          // left {"command":"drive","mdata":[4,100,500]}
-          else if (course == 4){
-          Motor_Left(mspeed,mdelay);
-          }
-          // stop {"command":"drive","mdata":[0]}     
-          else if (course == 0){
-          Motor_Stop();
-          }   
-    }
-    // clean buffer
-    inputString="";
+      }
+      else {
+        // Led pins 13-11
+        command = root["command"];
+        pin = root["data"][0];
+        value = root["data"][1];
+        ldelay = root["data"][2];
+        course = root["mdata"][0];
+        mspeed = root["mdata"][1];
+        mdelay = root["mdata"][2];
+        if (command="lights") {
+            // Lights on, not blinking
+            if (value == 1 && (ldelay == 0 || ldelay == NULL)){
+              digitalWrite(pin, HIGH);
+              if (pin == 13) { pin13_blinking = false; }
+              if (pin == 12) { pin12_blinking = false; }   
+              if (pin == 11) { pin11_blinking = false; }                
+            }
+            // blinking lights
+            else if (value == 1 && (!ldelay == 0 || !ldelay == NULL)){
+              if (pin == 13) { pin13_blinking = true; pin13_delay = ldelay;}
+              if (pin == 12) { pin12_blinking = true; pin12_delay = ldelay;}   
+              if (pin == 11) { pin11_blinking = true; pin11_delay = ldelay;}              
+            }
+            // Lights off
+            else if (value == 0 ){
+              digitalWrite(pin, LOW);
+              if (pin == 13) { pin13_blinking = false; }
+              if (pin == 12) { pin12_blinking = false; }   
+              if (pin == 11) { pin11_blinking = false; }  
+            }
+        }
+        if (command ="drive") {motor_active = true; }
+      }
+    // returning the default state of serialEvent1()
     stringComplete = false;
-    inChar = NULL;
-    JsonChar = NULL;
-    return;     
+    // clean json incoming data buffers
+    pin = NULL; value = NULL; ldelay = NULL;
+    inputString="";
+    inChar = NULL; JsonChar = NULL;
+    return;      
 }
 
 void setup() {
@@ -279,15 +269,53 @@ void setup() {
 }
 
 void loop() {
-
-    // Sensor update interval
+    // update interval
     unsigned long currentMillis = millis();
+    unsigned long pin13_currentMillis = millis();
+    unsigned long pin12_currentMillis = millis();
+    unsigned long pin11_currentMillis = millis();
+    unsigned long mcurrentMillis = millis();
+    // Sensors
     if (currentMillis - previousMillis >= interval) {
       // save the last time of sensor reporting
       previousMillis = currentMillis;    
-      Sensor_DHT ();
+      Json_Report_Sensor_DHT();
+      //Json_Report_Sensor_Distance();
+      //Json_Report_Sensor_ACC();
+      //Json_Report_Sensor_Edge();
+      //Json_Report_Sensor_RFID();
     }
     // Handling incoming Json from serial port 
-    HandleIncommingJson (); 
-  
-}
+    // JSon serial read
+    // print the string when a newline arrives:
+    serialEvent1(); if (stringComplete == true) { HandleIncommingJson ();}
+    // Light blinking
+    if ( pin13_blinking == true){
+        if (pin13_currentMillis - pin13_previousMillis >= pin13_delay) {
+          pin13_previousMillis = pin13_currentMillis; 
+          if (digitalRead(13) == LOW) { digitalWrite(13, HIGH);
+          } else { digitalWrite(13, LOW); }
+        }
+    }                       
+    if ( pin12_blinking == true){
+        if (pin12_currentMillis - pin12_previousMillis >= pin12_delay) {
+          pin12_previousMillis = pin12_currentMillis; 
+          if (digitalRead(12) == LOW) { digitalWrite(12, HIGH);
+          } else { digitalWrite(12, LOW); }
+        }             
+    }
+    if ( pin11_blinking == true){
+        if (pin11_currentMillis - pin11_previousMillis >= pin11_delay) {
+          pin11_previousMillis = pin11_currentMillis; 
+          if (digitalRead(11) == LOW) { digitalWrite(11, HIGH);
+          } else { digitalWrite(11, LOW); }
+        }             
+    }     
+    // Start engine
+    // TODO motor function interrupts still all other functions
+    if (motor_active == true ) { 
+        if (mcurrentMillis - mpreviousMillis >= mdelay) {
+          mpreviousMillis = mcurrentMillis;         
+          Motor(); }
+    }  
+ }
