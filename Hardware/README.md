@@ -5,7 +5,7 @@ _Note that layout description is overal. Some late findings... 6V battery is not
 
 **Arduino wiring setups are described below:**
 ![alt tag] (http://ibin.co/2TrT88krOaqu)
-_Note that layout description is overal. L298N requires additional control pinouts. L298N enaA-> Arduino pin8 and L298N enaB-> Arduino pin3._    
+_Note that layout description is overal. L298N requires additional control pinouts. L298N enA-> Arduino pin8 and L298N enB-> Arduino pin3._    
 
 
 ###esp8266 - esp-link:    
@@ -19,9 +19,12 @@ https://github.com/jeelabs/esp-link#serial-bridge-and-connections-to-arduino-avr
 esp-link firmware releases and flashing instructions for esp8266:     
 https://github.com/jeelabs/esp-link#releases-downloads
 
+###esp-link user interface:   
+esp-link comes with very handy user interface. It is possible to configure and admistrate Wifi parameters, managing MQTT/REST parameters and also handling serial events from Arduino. The UI allows to send and receive events. More details in below picture.    
 
-**esp8266 pinout:**    
 
+
+###esp8266 pinout:   
 ![alt tag] (http://www.partco.biz/verkkokauppa/images/tuotekuvat/e/esp8266_esp-01_pinout-large.jpg)
 
 
