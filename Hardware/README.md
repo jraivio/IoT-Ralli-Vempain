@@ -6,7 +6,8 @@ _Note that layout description is overal. Some late findings... 6V battery is not
 **Arduino wiring setups are described below:**
 ![alt tag] (http://ibin.co/2TrT88krOaqu)
 _Note that layout description is overal. L298N requires additional control pinouts. L298N enA-> Arduino pin8 and L298N enB-> Arduino pin3._    
-Wiring diagram is designed by [Fritzing tool.](http://fritzing.org/home/) The source code is available in this [repository](https://github.com/jraivio/IoT-Ralli-Vempain/blob/master/Hardware/Rally_Droid2.fzz)
+
+Wiring diagram is designed by [Fritzing tool.](http://fritzing.org/home/) The source code of this project diagram is available in this [repository](https://github.com/jraivio/IoT-Ralli-Vempain/blob/master/Hardware/Rally_Droid2.fzz)
 
 
 
