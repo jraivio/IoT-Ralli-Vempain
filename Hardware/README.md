@@ -31,7 +31,7 @@ More details in below picture:
 
 
 
-###esp8266 pinout:   
+###esp8266-01 pinout:   
 ![alt tag] (http://www.partco.biz/verkkokauppa/images/tuotekuvat/e/esp8266_esp-01_pinout-large.jpg)
 
 
