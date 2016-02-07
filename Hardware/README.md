@@ -27,7 +27,8 @@ https://github.com/jeelabs/esp-link#releases-downloads
 esp-link comes with very handy user interface. It is possible to configure and admistrate Wifi parameters, managing MQTT/REST parameters and also handling serial events from Arduino. The UI allows to send and receive events.    
 
 More details in below picture:    
-![alt tag] (https://github.com/jraivio/IoT-Ralli-Vempain/blob/master/Hardware/Pictures/esp-link.png)
+![alt tag] (https://github.com/jraivio/IoT-Ralli-Vempain/blob/master/Hardware/Pictures/esp-link.png)    
+
 
 
 ###esp8266 pinout:   
