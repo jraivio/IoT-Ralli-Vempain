@@ -7,6 +7,7 @@ _Note that layout description is overal. Some late findings... 6V battery is not
 ![alt tag] (http://ibin.co/2TrT88krOaqu)
 _Note that layout description is overal. L298N requires additional control pinouts. L298N enaA-> Arduino pin8 and L298N enaB-> Arduino pin3._    
 
+
 **esp8266 - esp-link:**   
 ![alt tag] (http://www.partco.biz/verkkokauppa/images/tuotekuvat/e/esp8266_esp-01_top-medium.jpg)
 
@@ -17,6 +18,7 @@ https://github.com/jeelabs/esp-link#serial-bridge-and-connections-to-arduino-avr
 
 esp-link firmware releases and flashing instructions for esp8266:     
 https://github.com/jeelabs/esp-link#releases-downloads
+
 
 **esp8266 pinout:**    
 ![alt tag] (http://www.partco.biz/verkkokauppa/images/tuotekuvat/e/esp8266_esp-01_pinout-large.jpg)
