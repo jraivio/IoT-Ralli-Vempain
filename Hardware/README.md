@@ -1,11 +1,13 @@
-Hardware layout are described below:
+**Hardware layout are described below:**
 ![alt tag] (http://ibin.co/2TrR4RWtmNH5)
 
-Arduino wiring setups are described below:
+_Note that layout description is overal. Some late findings... 6V battery is not enough. 7V-12V is recommended._    
+
+**Arduino wiring setups are described below:**
 ![alt tag] (http://ibin.co/2TrT88krOaqu)
+_Note that layout description is overal. L298N requires additional control pinouts. L298N enaA-> Arduino pin8 and L298N enaB-> Arduino pin3._    
 
 **esp8266 - esp-link:**   
-
 ![alt tag] (http://www.partco.biz/verkkokauppa/images/tuotekuvat/e/esp8266_esp-01_top-medium.jpg)
 
 This demo setup is based on esp8266-01 Serial-Wifi bridge. The default AT based firmware of esp8266 has replaced for the esp-link version.
@@ -17,7 +19,6 @@ esp-link firmware releases and flashing instructions for esp8266:
 https://github.com/jeelabs/esp-link#releases-downloads
 
 **esp8266 pinout:**    
-
 ![alt tag] (http://www.partco.biz/verkkokauppa/images/tuotekuvat/e/esp8266_esp-01_pinout-large.jpg)
 
 
