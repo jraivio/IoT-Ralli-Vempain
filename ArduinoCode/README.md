@@ -11,7 +11,7 @@ json string parser library, by Benoit Blanchon:
 https://github.com/bblanchon/ArduinoJson
 
 **Following functions in use:**  
-`Json_Report_Sensor_DHT()`: // DHT11 sensor data reader & json report creation    
+`JsonReportSensorDHT()`: // DHT11 sensor data reader & json report creation    
 `Motor()`:  // Motor control functions, adapted for L298N    
 `serialEvent1()`: // Monitoring new serial events from esp  
 `HandleIncommingJson()`: // json parser for incoming commands from esp    
