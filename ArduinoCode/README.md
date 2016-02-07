@@ -3,11 +3,11 @@
 ###High level SW architecture:
 ![alt tag] (https://github.com/jraivio/IoT-Ralli-Vempain/blob/master/Hardware/Pictures/Ralli_Vempain_highlevel_SW_arc.png)
 
-**Following libraries in use:**   
+**Following 3rd party libraries in use:**   
 Temperature & Humidity sensor DHT11, Adafruit version:    
 https://github.com/adafruit/DHT-sensor-library    
 
-json string parser library, by Benoit Blanchon:    
+JSON string parser library, by Benoit Blanchon:    
 https://github.com/bblanchon/ArduinoJson
 
 **Following functions in use:**  
@@ -18,5 +18,5 @@ https://github.com/bblanchon/ArduinoJson
 `setup()`: // Standard Arduino function to setup the system    
 `loop()`: // Standard Arduino loop function. Primary function to call other functions.   
 
-Note that details of json string formats are described in the wiki part  
+_Note that details of json string formats are described in the wiki part_  
 https://github.com/jraivio/IoT-Ralli-Vempain/wiki
