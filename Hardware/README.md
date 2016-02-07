@@ -24,9 +24,9 @@ esp-link firmware releases and flashing instructions for esp8266:
 https://github.com/jeelabs/esp-link#releases-downloads
 
 ###esp-link user interface:   
-esp-link comes with very handy user interface. It is possible to configure and admistrate Wifi parameters, managing MQTT/REST parameters and also handling serial events from Arduino. The UI allows to send and receive events.    
+esp-link comes with very handy user interface. It is possible to configure and admistrate Wifi parameters, managing MQTT/REST parameters and also handling serial events from Arduino. The UI allows to send and receive serial events. This feature makes life much easier in case of troubleshooting.    
 
-More details in below picture:    
+esp-link web UI. example of μC Console:    
 ![alt tag] (https://github.com/jraivio/IoT-Ralli-Vempain/blob/master/Hardware/Pictures/esp-link.png)    
 
 
