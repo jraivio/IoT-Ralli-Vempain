@@ -86,7 +86,7 @@ unsigned long pin13_previousMillis = 0;      // will store last time light delay
 unsigned long pin12_previousMillis = 0;      // will store last time light delay update
 unsigned long pin11_previousMillis = 0;      // will store last time light delay update
 
-void Json_Report_Sensor_DHT() {
+void JsonReportSensorDHT() {
 
     // DHT functions
     // Reading temperature or humidity takes about 250 milliseconds!
@@ -125,10 +125,10 @@ void Json_Report_Sensor_DHT() {
     return;
 }
 
-void Json_Report_Sensor_Distance(){}  // TBD
-void Json_Report_Sensor_ACC(){}       // TBD
-void Json_Report_Sensor_Edge() {}     // TBD
-void Json_Report_Sensor_RFID() {}     // TBD
+void JsonReportSensorDistance(){}  // TBD
+void JsonReportSensorACC(){}       // TBD
+void JsonReportSensorEdge() {}     // TBD
+void JsonReportSensorRFID() {}     // TBD
 
 void Motor()
 {
@@ -197,7 +197,7 @@ void serialEvent1() {
 }
 
 
-void HandleIncommingJson () {
+void HandleIncommingJson() {
 
       StaticJsonBuffer<512> jsonInBuffer;                 
       const char *JsonChar = inputString.c_str(); // 1 KB
@@ -279,16 +279,16 @@ void loop() {
     if (currentMillis - previousMillis >= interval) {
       // save the last time of sensor reporting
       previousMillis = currentMillis;    
-      Json_Report_Sensor_DHT();
-      //Json_Report_Sensor_Distance();
-      //Json_Report_Sensor_ACC();
-      //Json_Report_Sensor_Edge();
-      //Json_Report_Sensor_RFID();
+      JsonReportSensorDHT();
+      //JsonReportSensorDistance();
+      //JsonReportSensorACC();
+      //JsonReportSensorEdge();
+      //JsonReportSensorRFID();
     }
     // Handling incoming Json from serial port 
     // JSon serial read
     // print the string when a newline arrives:
-    serialEvent1(); if (stringComplete == true) { HandleIncommingJson ();}
+    serialEvent1(); if (stringComplete == true) { HandleIncommingJson();}
     // Light blinking
     if ( pin13_blinking == true){
         if (pin13_currentMillis - pin13_previousMillis >= pin13_delay) {
