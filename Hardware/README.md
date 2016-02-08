@@ -1,4 +1,5 @@
-**Hardware layout are described below:**
+### Outlook of IOT Droid with equipped bells and whistles
+
 ![alt tag] (http://ibin.co/2TrR4RWtmNH5)
 
 _Note that layout description is overal. Some late findings... 6V battery is not enough. 7V-12V is recommended._    
