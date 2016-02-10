@@ -1,4 +1,4 @@
-###Ralli-Vempain droid with equipped all bells and whistles
+###Ralli-Vempain droid equipped with all bells and whistles
 
 ![alt tag] (https://github.com/jraivio/IoT-Ralli-Vempain/blob/master/Hardware/Pictures/Ralli-Vempain-layout.jpg)
 
