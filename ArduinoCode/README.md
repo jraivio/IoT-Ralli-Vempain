@@ -5,6 +5,7 @@
 
 **Getting start with SW development environment:**    
 - [Arduino IDE instructions] (https://www.arduino.cc/en/Guide/Environment)     
+- [Arduino Course for Absolute Beginners] (https://www.youtube.com/watch?v=09zfRaLEasY)
 
 **Following 3rd party libraries in use:**   
 Temperature & Humidity sensor DHT11, Adafruit version:    
