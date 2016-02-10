@@ -10,11 +10,8 @@
 - [Instructions] (https://www.arduino.cc/en/Guide/Environment)     
 
 **Following 3rd party libraries in use:**   
-Temperature & Humidity sensor DHT11, Adafruit version:    
-https://github.com/adafruit/DHT-sensor-library    
-
-JSON string parser library, by Benoit Blanchon:    
-https://github.com/bblanchon/ArduinoJson
+- [Temperature & Humidity sensor DHT11, Adafruit version] (https://github.com/adafruit/DHT-sensor-library)     
+- [JSON string parser library, by Benoit Blanchon] (https://github.com/bblanchon/ArduinoJson)    
 
 **Following functions in use:**  
 `JsonReportSensorDHT()`: // DHT11 sensor data reader & json report creation    
