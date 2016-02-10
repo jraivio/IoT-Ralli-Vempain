@@ -3,6 +3,8 @@
 ###High level SW architecture:
 ![alt tag] (https://github.com/jraivio/IoT-Ralli-Vempain/blob/master/Hardware/Pictures/Ralli_Vempain_highlevel_SW_arc.png)
 
+[The sample code for Arduino] (https://github.com/jraivio/IoT-Ralli-Vempain/blob/master/ArduinoCode/Ralli_Vempain_arduinoMega2560.ino)
+
 **Getting start with SW development environment:**    
 - [Arduino IDE instructions] (https://www.arduino.cc/en/Guide/Environment)     
 
@@ -24,4 +26,4 @@ https://github.com/bblanchon/ArduinoJson
 _Note that details of json string formats are described in the wiki part_  
 https://github.com/jraivio/IoT-Ralli-Vempain/wiki
 
-[The reference code for Arduino] (https://github.com/jraivio/IoT-Ralli-Vempain/blob/master/ArduinoCode/Ralli_Vempain_arduinoMega2560.ino)
+
