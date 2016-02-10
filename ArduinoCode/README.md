@@ -24,7 +24,7 @@ https://github.com/bblanchon/ArduinoJson
 `setup()`: // Standard Arduino function to setup the system    
 `loop()`: // Standard Arduino loop function. Primary function to call other functions.   
 
-Note that details of json string formats are described in the (wiki part) [https://github.com/jraivio/IoT-Ralli-Vempain/wiki]  
+Note that details of json string formats are described in the [wiki part] (https://github.com/jraivio/IoT-Ralli-Vempain/wiki)  
 
 
 
