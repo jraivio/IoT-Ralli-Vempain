@@ -14,12 +14,12 @@
 - [JSON string parser library, by Benoit Blanchon] (https://github.com/bblanchon/ArduinoJson)    
 
 **Following functions in use:**  
-`JsonReportSensorDHT()`: // DHT11 sensor data reader & json report creation    
-`Motor()`:  // Motor control functions, adapted for L298N    
-`serialEvent1()`: // Monitoring new serial events from esp  
-`HandleIncommingJson()`: // json parser for incoming commands from esp    
-`setup()`: // Standard Arduino function to setup the system    
-`loop()`: // Standard Arduino loop function. Primary function to call other functions.   
+- `JsonReportSensorDHT()`: // DHT11 sensor data reader & json report creation    
+- `Motor()`:  // Motor control functions, adapted for L298N    
+- `serialEvent1()`: // Monitoring new serial events from esp  
+- `HandleIncommingJson()`: // json parser for incoming commands from esp    
+- `setup()`: // Standard Arduino function to setup the system    
+- `loop()`: // Standard Arduino loop function. Primary function to call other functions.   
 
 _Note that details of json string formats are described in the [wiki part] (https://github.com/jraivio/IoT-Ralli-Vempain/wiki)_  
 
