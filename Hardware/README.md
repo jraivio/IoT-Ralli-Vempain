@@ -4,7 +4,7 @@
 
 _Note that layout description is overal. Some late findings... 6V battery is not enough. 7V-12V is recommended._    
 
-**IOT Droid wiring diagram by Fritzing tool:**
+###IOT Droid wiring diagram by Fritzing tool:
 ![alt tag] (https://github.com/jraivio/IoT-Ralli-Vempain/blob/master/Hardware/Pictures/Ralli-Vempain-Fritzing-wiring.png)
 _Note that layout description is overal. L298N requires additional control pinouts. L298N enA-> Arduino pin8 and L298N enB-> Arduino pin3._    
 
