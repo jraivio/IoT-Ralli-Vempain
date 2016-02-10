@@ -5,7 +5,7 @@
 
 [Arduino sample code for Ralli-Vempain gadget] (https://github.com/jraivio/IoT-Ralli-Vempain/blob/master/ArduinoCode/Ralli_Vempain_arduinoMega2560.ino)
 
-**Getting start with Arduino SW development environment:**    
+**Getting started with Arduino SW development environment:**    
 - [Download IDE] (https://www.arduino.cc/en/Main/Software)    
 - [Instructions] (https://www.arduino.cc/en/Guide/Environment)     
 
