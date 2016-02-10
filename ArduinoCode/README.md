@@ -4,7 +4,7 @@
 ![alt tag] (https://github.com/jraivio/IoT-Ralli-Vempain/blob/master/Hardware/Pictures/Ralli_Vempain_highlevel_SW_arc.png)
 
 **Getting start with SW development environment:**    
-- [Getting start with Arduino: e.g Arduino pinouts, IDE setup, arduino libraries and sample code] (https://www.arduino.cc/en/Guide/HomePage)     
+- [Arduino IDE instructions] (https://www.arduino.cc/en/Guide/Environment)     
 
 **Following 3rd party libraries in use:**   
 Temperature & Humidity sensor DHT11, Adafruit version:    
