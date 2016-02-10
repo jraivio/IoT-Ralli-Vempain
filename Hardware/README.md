@@ -1,6 +1,6 @@
 ### Outlook of IOT Droid with equipped bells and whistles
 
-![alt tag] (http://ibin.co/2TrR4RWtmNH5)
+![alt tag] (https://github.com/jraivio/IoT-Ralli-Vempain/blob/master/Hardware/Pictures/Ralli-Vempain-layout.jpg)
 
 _Note that layout description is overal. Some late findings... 6V battery is not enough. 7V-12V is recommended._    
 
