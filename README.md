@@ -13,6 +13,7 @@ Source code type of approach is mandatory. All used 3rd party libraries in this 
 ***Getting start with development environment:***    
 - [Getting start with Arduino: Arduino development board pinouts, IDE setup, Arduino SW libraries, sample code, etc] (https://www.arduino.cc/en/Guide/HomePage)   
 - [Getting start with esp8266: Basics, pinouts and flashing instruction, etc] (http://www.esp8266.com/wiki/doku.php?id=getting-started-with-the-esp8266)    
+- [Open Electronics is the brainchild of a world leader in hobby electronics] (http://www.open-electronics.org)   
 
 
  
