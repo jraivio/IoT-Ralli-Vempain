@@ -6,7 +6,7 @@
 [The sample code for Arduino] (https://github.com/jraivio/IoT-Ralli-Vempain/blob/master/ArduinoCode/Ralli_Vempain_arduinoMega2560.ino)
 
 **Getting start with SW development environment:**    
-- [Downlod Arduino IDE] (https://www.arduino.cc/en/Main/Software)    
+- [Downlod the Arduino IDE] (https://www.arduino.cc/en/Main/Software)    
 - [Arduino IDE instructions] (https://www.arduino.cc/en/Guide/Environment)     
 
 **Following 3rd party libraries in use:**   
