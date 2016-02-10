@@ -15,5 +15,4 @@ Source code type of approach is mandatory. All used 3rd party libraries in this 
 - [Getting start with esp8266: Basics, pinouts and flashing instruction, etc] (http://www.esp8266.com/wiki/doku.php?id=getting-started-with-the-esp8266)    
 - [Open Electronics is the brainchild of a world leader in hobby electronics] (http://www.open-electronics.org)   
 
-
  
