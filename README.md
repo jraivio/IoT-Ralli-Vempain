@@ -5,7 +5,7 @@
 - [Wiring and HW layouts:] (https://github.com/jraivio/IoT-Ralli-Vempain/tree/master/Hardware)  
 
 ***Getting start with development environment:***    
-- [Getting start with Arduino: e.g Arduino pinouts, IDE setup, arduino libraries and sample code] (https://www.arduino.cc/en/Guide/HomePage)   
+- [Getting start with Arduino: e.g Arduino development board pinouts, IDE setup, arduino SW libraries and sample code] (https://www.arduino.cc/en/Guide/HomePage)   
 - [Getting start with esp8266: Basics, pinouts and flashing instruction] (http://www.esp8266.com/wiki/doku.php?id=getting-started-with-the-esp8266)    
 
 
