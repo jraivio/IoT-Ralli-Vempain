@@ -7,7 +7,7 @@ Source code type of approach is mandatory. All used 3rd party libraries in this 
 
 ###Content of Ralli-Vempain repository:     
 - [Arduino Code: Refence functions to control the gadget] (https://github.com/jraivio/IoT-Ralli-Vempain/tree/master/ArduinoCode)    
-- [Interface descriptions: Reference implementation to communicate with gadget] (https://github.com/jraivio/IoT-Ralli-Vempain/wiki)  
+- [Interface descriptions: Reference implementation to communicate with the gadget] (https://github.com/jraivio/IoT-Ralli-Vempain/wiki)  
 - [Wiring and HW layouts: Instructions to install the gadget] (https://github.com/jraivio/IoT-Ralli-Vempain/tree/master/Hardware)  
 
 ###Getting start with development environment:        
