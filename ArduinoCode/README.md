@@ -3,7 +3,7 @@
 ###High level SW architecture:
 ![alt tag] (https://github.com/jraivio/IoT-Ralli-Vempain/blob/master/Hardware/Pictures/Ralli_Vempain_highlevel_SW_arc.png)
 
-[The sample code for Arduino] (https://github.com/jraivio/IoT-Ralli-Vempain/blob/master/ArduinoCode/Ralli_Vempain_arduinoMega2560.ino)
+[Arduino sample code for Ralli-Vempain gadget] (https://github.com/jraivio/IoT-Ralli-Vempain/blob/master/ArduinoCode/Ralli_Vempain_arduinoMega2560.ino)
 
 **Getting start with SW development environment:**    
 - [Downlod the Arduino IDE] (https://www.arduino.cc/en/Main/Software)    
