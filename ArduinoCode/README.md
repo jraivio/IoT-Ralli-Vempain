@@ -23,3 +23,6 @@ https://github.com/bblanchon/ArduinoJson
 
 _Note that details of json string formats are described in the wiki part_  
 https://github.com/jraivio/IoT-Ralli-Vempain/wiki
+
+*** [The reference code for Arduino] (https://github.com/jraivio/IoT-Ralli-Vempain/blob/master/ArduinoCode/Ralli_Vempain_arduinoMega2560.ino)
+
