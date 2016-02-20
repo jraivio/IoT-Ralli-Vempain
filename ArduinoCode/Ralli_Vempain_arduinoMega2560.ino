@@ -68,7 +68,8 @@ String inputString = "";         // a string to hold incoming data
 boolean stringComplete = false;  // whether the string is complete
 char inChar; // a char to handle incoming data
 
-// Motor Setup
+// Motor driver Setup
+// Pins L298N -> Mega board
 int enA = 8;
 int in1 = 4;
 int in2 = 5;
@@ -134,66 +135,77 @@ void JsonReportSensorDHT() {
 
 void JsonReportSensorDistance(){}  // TBD
 void JsonReportSensorACC(){}       // TBD
-void JsonReportSensorEdge() {}     // TBD
-void JsonReportSensorRFID() {
-
-    // Verify if the NUID has been readed
-    if ( ! rfid.PICC_ReadCardSerial())
-      return;
-    Serial.print(F("PICC type: "));
-    MFRC522::PICC_Type piccType = rfid.PICC_GetType(rfid.uid.sak);
-    Serial.println(rfid.PICC_GetTypeName(piccType));
-
-    // Check is the PICC of Classic MIFARE type
-    if (piccType != MFRC522::PICC_TYPE_MIFARE_MINI &&  
-      piccType != MFRC522::PICC_TYPE_MIFARE_1K &&
-      piccType != MFRC522::PICC_TYPE_MIFARE_4K) {
-      Serial.println(F("Your tag is not of type MIFARE Classic."));
-      return;
-    }
-
-    if (rfid.uid.uidByte[0] != nuidPICC[0] || 
-      rfid.uid.uidByte[1] != nuidPICC[1] || 
-      rfid.uid.uidByte[2] != nuidPICC[2] || 
-      rfid.uid.uidByte[3] != nuidPICC[3] ) {
-      Serial.println(F("A new card has been detected."));
-      // Define Json for sensor print out
-      StaticJsonBuffer<512> jsonOutBuffer;   // 514 B
-      String rootJson = "";
-      String arrayJson = "";
-      JsonObject& root = jsonOutBuffer.createObject();
-      root["sensor"] = "rfid";
-      JsonArray& array = jsonOutBuffer.createArray();
-      // Store NUID into nuidPICC array
-      for (byte i = 0; i < 4; i++) {
-        nuidPICC[i] = rfid.uid.uidByte[i];
-        }   
-      Serial.println(F("The NUID tag is:"));
-      Serial.print(F("In dec: "));
-      byte *buffer = rfid.uid.uidByte; 
-      byte bufferSize = rfid.uid.size;
-      String NUID = "";
-      for (byte i = 0; i < bufferSize; i++) {
-          //Serial.print(buffer[i] < 0x10 ? " 0" : " ");
-          //Serial.print(buffer[i], DEC);
-          NUID = String(NUID + String(buffer[i], DEC)); 
-          }
-      array.add(NUID);
-      // Print json string to Serial1
-      root.printTo(rootJson);
-      array.printTo(arrayJson);
-      String JointJson = rootJson + ":" + arrayJson + "}";
-      //Serial.println("json string for rfid:" + JointJson);
-      Serial1.println(JointJson);
+void JsonReportSensorEdge() {
+  StaticJsonBuffer<512> jsonOutBuffer;   // 514 B
+  String rootJson = "";
+  String arrayJson = "";
+  JsonObject& root = jsonOutBuffer.createObject();
+  root["sensor"] = "edge";
+  JsonArray& array = jsonOutBuffer.createArray();
+  if (motor_active = true) {
+    while(1)  {
+      delay(500);
+      if(digitalRead(6)==LOW)  {
+        Serial.println("Valkoinen.");
       }
-    else Serial.println(F("Card read previously."));
-   
-    rfid.PICC_HaltA(); // Halt PICC
-    rfid.PCD_StopCrypto1(); // Stop encryption on PCD
-    return;  
-    
+      else  {
+        Serial.println("Musta.");
+      }
+    }
+  }  
+}  
+void JsonReportSensorRFID() {
+  if ( ! rfid.PICC_ReadCardSerial()) 
+    return;
+  Serial.print(F("PICC type: "));
+  MFRC522::PICC_Type piccType = rfid.PICC_GetType(rfid.uid.sak);
+  Serial.println(rfid.PICC_GetTypeName(piccType));
+  // Check is the PICC of Classic MIFARE type
+  if (piccType != MFRC522::PICC_TYPE_MIFARE_MINI &&  
+    piccType != MFRC522::PICC_TYPE_MIFARE_1K &&
+    piccType != MFRC522::PICC_TYPE_MIFARE_4K) {
+    Serial.println(F("Your tag is not of type MIFARE Classic."));
+    return;
+  }
+  if (rfid.uid.uidByte[0] != nuidPICC[0] || 
+    rfid.uid.uidByte[1] != nuidPICC[1] || 
+    rfid.uid.uidByte[2] != nuidPICC[2] || 
+    rfid.uid.uidByte[3] != nuidPICC[3] ) {
+    Serial.println(F("A new card has been detected."));
+    // Define Json for sensor print out
+    StaticJsonBuffer<512> jsonOutBuffer;   // 514 B
+    String rootJson = "";
+    String arrayJson = "";
+    JsonObject& root = jsonOutBuffer.createObject();
+    root["sensor"] = "rfid";
+    JsonArray& array = jsonOutBuffer.createArray();
+    // Store NUID into nuidPICC array
+    for (byte i = 0; i < 4; i++) {
+      nuidPICC[i] = rfid.uid.uidByte[i];
+      }   
+    Serial.println(F("The NUID tag is:"));
+    Serial.print(F("In dec: "));
+    byte *buffer = rfid.uid.uidByte; 
+    byte bufferSize = rfid.uid.size;
+    String NUID = "";
+    for (byte i = 0; i < bufferSize; i++) {
+      //Serial.print(buffer[i] < 0x10 ? " 0" : " ");
+      //Serial.print(buffer[i], DEC);
+      NUID = String(NUID + String(buffer[i], DEC)); 
+      }
+    array.add(NUID);
+    // Print json string to Serial1
+    root.printTo(rootJson);
+    array.printTo(arrayJson);
+    String JointJson = rootJson + ":" + arrayJson + "}";
+    //Serial.println("json string for rfid:" + JointJson);
+    Serial1.println(JointJson);
+    }
+  else Serial.println(F("Card read previously."));
+  rfid.PICC_HaltA(); // Halt PICC
+  rfid.PCD_StopCrypto1(); // Stop encryption on PCD
+  return;  
 }
-
 void Motor()
 {
     // this function will run the motors across the range of possible speeds
@@ -257,7 +269,6 @@ void serialEvent1() {
     }
   }
 }
-
 void HandleIncommingJson() {
     StaticJsonBuffer<512> jsonInBuffer;                 
     const char *JsonChar = inputString.c_str(); // 1 KB
@@ -311,7 +322,6 @@ void HandleIncommingJson() {
   inChar = NULL; JsonChar = NULL;
   return;      
 }
-
 void setup() {
     // initialize both serial ports:
     Serial.begin(9600);
@@ -322,13 +332,15 @@ void setup() {
     pinMode(13, OUTPUT);
     pinMode(12, OUTPUT);
     pinMode(11, OUTPUT);
+    // Egde sensor input pins
+    pinMode(24,INPUT); // Right sensor
+    pinMode(22,INPUT); // Left sensor
     inputString.reserve(256); // reserve 256 bytes for the inputString:
     dht.begin(); // Init DHT
     SPI.begin(); // Init SPI bus
     rfid.PCD_Init(); // Init MFRC522 
     for (byte i = 0; i < 6; i++) { key.keyByte[i] = 0xFF; } // RFID byte handling
 }
-
 void loop() {
     // update interval
     unsigned long currentMillis = millis();
@@ -347,7 +359,6 @@ void loop() {
     }
     // Look for new RFID cards
     if ( rfid.PICC_IsNewCardPresent()) { JsonReportSensorRFID(); }
-     
     // Handling incoming Json from serial port 
     // JSon serial read
     // print the string when a newline arrives:
