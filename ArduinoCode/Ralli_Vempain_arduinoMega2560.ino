@@ -113,19 +113,14 @@ void JsonReportSensorDHT() {
     }
     // Create Json for sensor print out
     StaticJsonBuffer<512> jsonOutBuffer;   // 514 B
-    String rootJson = "";
-    String arrayJson = "";
+    String rootJson = ""; String arrayJson = "";
     JsonObject& root = jsonOutBuffer.createObject();
-    root["sensor"] = "temp_hum";
-    JsonArray& array = jsonOutBuffer.createArray();
+    root["sensor"] = "temp_hum"; JsonArray& array = jsonOutBuffer.createArray();
     array.add(t);
     array.add(h);
     // Print to Serial
-    root.printTo(rootJson);
-    array.printTo(arrayJson);
-    String JointJson = rootJson + ":" + arrayJson + "}";
+    root.printTo(rootJson); array.printTo(arrayJson); String JointJson = rootJson + ":" + arrayJson + "}";
     Serial1.println(JointJson);
-    arrayJson = "";
     return;
 }
 
@@ -133,11 +128,9 @@ void JsonReportSensorDistance(){}  // TBD
 void JsonReportSensorACC(){}       // TBD
 void JsonReportSensorEdge() {
   StaticJsonBuffer<512> jsonOutBuffer;   // 514 B
-  String rootJson = "";
-  String arrayJson = "";
+  String rootJson = ""; String arrayJson = "";
   JsonObject& root = jsonOutBuffer.createObject();
-  root["sensor"] = "edge";
-  JsonArray& array = jsonOutBuffer.createArray();
+  root["sensor"] = "edge"; JsonArray& array = jsonOutBuffer.createArray();
   if (motor_active = true) {
     while(1)  {
       delay(500);
@@ -149,6 +142,7 @@ void JsonReportSensorEdge() {
       root.printTo(rootJson); array.printTo(arrayJson); String JointJson = rootJson + ":" + arrayJson + "}";
       //Serial.println("json string for edge:" + JointJson);
       Serial1.println(JointJson);
+    return;
     }
   }  
 }  
