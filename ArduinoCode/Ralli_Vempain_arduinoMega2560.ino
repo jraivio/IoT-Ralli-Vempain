@@ -36,24 +36,8 @@ const long interval = 10000;            // Sensor data sending interval
 #include <ArduinoJson.h>
 const char* command;
 
-/* e.g json format {"command":"drive","mdata":[1,150,500]}
-  * where course is forward, speed value is 150 and 500 ms driving period
-  * Speed range 100 - 255 is recommended for this setup
-  * e.g curl via esp-link >curl -i -X POST  http://192.168.0.171/console/send?text=%7B%22command%22%3A%22drive%22%2C%22mdata%22%3A%5B1%2C150%2C500%5D%7D
-  * Example json formats 
-  * drive forward {"command":"drive","mdata":[1,100,500]}
-  * drive backward {"command":"drive","mdata":[2,100,500]}
-  * turn right, direction forward {"command":"drive","mdata":[1,100,500]}
-  * turn left, direction forward {"command":"drive","mdata":[1,100,500]}
-  * stop with delay, 5 sec {"command":"drive","mdata":[0,0,5000]}
-  * full stop {"command":"drive","mdata":[,,]}
-  * Control LED digital output pins  
-  * e.g pin 12 on, not blinking {"command":"lights","data":[12,1,0]}
-  * e.g curl via esp-link >curl -i -X POST http://192.168.0.171/console/send?text=%7B%22command%22%3A%22lights%22%2C%22data%22%3A%5B12%2C1%2C0%5D%7D
-  * UTF-8 encoder tool http://meyerweb.com/eric/tools/dencoder/
-  * e.g pin 12 on, blinking with 500 ms delay {"command":"lights","data":[12,1,500]}
-  * e.g curl via esp-link >curl -i -X POST http://192.168.0.171/console/send?text=%7B%22command%22%3A%22lights%22%2C%22data%22%3A%5B12%2C1%2C500%5D%7D
-*/
+// Json description:
+// https://github.com/jraivio/IoT-Ralli-Vempain/wiki
 
 /* ------------------------------------
   * RFID Card reader MFRC522
