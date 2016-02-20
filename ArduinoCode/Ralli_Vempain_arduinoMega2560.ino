@@ -4,8 +4,9 @@
 // 
 // Example code is based on Arduino Mega2560 
 //
-// This arduino demo setup is connected to esp8266 Wifi via serial. The http services is powered by esp-link. The esp unit is working as Wifi-Serial bridge.
-// No code changes for the esp-link
+// This arduino demo setup is connected to esp8266 Wifi via serial. 
+// The http services are managed by esp-link firmware in ESP. The esp unit is working as Wifi-Serial bridge.
+// No code changes are required for the esp-link
 // Github repository for esp-link https://github.com/jeelabs/esp-link
 
 // Temperature & Humidity sensor
@@ -55,17 +56,12 @@ const char* command;
 
 #include <SPI.h>
 #include <MFRC522.h>
-
 #define RST_PIN   49     // Configurable, see typical pin layout above (valk)
 #define SS_PIN    53    // Configurable, see typical pin layout above (vihr)
- 
 MFRC522 rfid(SS_PIN, RST_PIN); // Instance of the class
-
 MFRC522::MIFARE_Key key; 
-
 // Init array that will store new NUID 
 byte nuidPICC[3];
-
 
 // Serial data handling, global variables
 String inputString = "";         // a string to hold incoming data
@@ -198,8 +194,6 @@ void JsonReportSensorRFID() {
     
 }
 
-//Helper routine to dump a byte array as dec values to Serial.
-
 void Motor()
 {
     // this function will run the motors across the range of possible speeds
@@ -244,14 +238,12 @@ void Motor()
     motor_active = false;
     return;
 }
-
 /*
   SerialEvent occurs whenever a new data comes in the
  hardware serial RX.  This routine is run between each
  time loop() runs, so using delay inside loop can delay
  response.  Multiple bytes of data may be available.
  */
-
 void serialEvent1() {
   while (Serial1.available()> 0) {
     // get the new byte:
@@ -266,20 +258,18 @@ void serialEvent1() {
   }
 }
 
-
 void HandleIncommingJson() {
-
-      StaticJsonBuffer<512> jsonInBuffer;                 
-      const char *JsonChar = inputString.c_str(); // 1 KB
-      JsonObject& root = jsonInBuffer.parseObject(JsonChar);
-      int pin;
-      int value;
-      int ldelay;
-      // Verify Json 
-      if (JsonChar!=NULL && !root.success()) {
-        Serial.println("parseObject() failed: ");
-        Serial.println(JsonChar);
-      }
+    StaticJsonBuffer<512> jsonInBuffer;                 
+    const char *JsonChar = inputString.c_str(); // 1 KB
+    JsonObject& root = jsonInBuffer.parseObject(JsonChar);
+    int pin;
+    int value;
+    int ldelay;
+    // Verify Json 
+    if (JsonChar!=NULL && !root.success()) {
+      Serial.println("parseObject() failed: ");
+      Serial.println(JsonChar);
+    }
       else {
         // Led pins 13-11
         command = root["command"];
@@ -289,37 +279,37 @@ void HandleIncommingJson() {
         course = root["mdata"][0];
         mspeed = root["mdata"][1];
         mdelay = root["mdata"][2];
-        if (command="lights") {
-            // Lights on, not blinking
-            if (value == 1 && (ldelay == 0 || ldelay == NULL)){
-              digitalWrite(pin, HIGH);
-              if (pin == 13) { pin13_blinking = false; }
-              if (pin == 12) { pin12_blinking = false; }   
-              if (pin == 11) { pin11_blinking = false; }                
-            }
-            // blinking lights
-            else if (value == 1 && (!ldelay == 0 || !ldelay == NULL)){
-              if (pin == 13) { pin13_blinking = true; pin13_delay = ldelay;}
-              if (pin == 12) { pin12_blinking = true; pin12_delay = ldelay;}   
-              if (pin == 11) { pin11_blinking = true; pin11_delay = ldelay;}              
-            }
-            // Lights off
-            else if (value == 0 ){
-              digitalWrite(pin, LOW);
-              if (pin == 13) { pin13_blinking = false; }
-              if (pin == 12) { pin12_blinking = false; }   
-              if (pin == 11) { pin11_blinking = false; }  
-            }
-        }
-        if (command ="drive") {motor_active = true; }
+    if (command="lights") {
+    // Lights on, not blinking
+      if (value == 1 && (ldelay == 0 || ldelay == NULL)){
+        digitalWrite(pin, HIGH);
+        if (pin == 13) { pin13_blinking = false; }
+        if (pin == 12) { pin12_blinking = false; }   
+        if (pin == 11) { pin11_blinking = false; }                
       }
-    // returning the default state of serialEvent1()
-    stringComplete = false;
-    // clean json incoming data buffers
-    pin = NULL; value = NULL; ldelay = NULL;
-    inputString="";
-    inChar = NULL; JsonChar = NULL;
-    return;      
+      // blinking lights
+        else if (value == 1 && (!ldelay == 0 || !ldelay == NULL)){
+          if (pin == 13) { pin13_blinking = true; pin13_delay = ldelay;}
+          if (pin == 12) { pin12_blinking = true; pin12_delay = ldelay;}   
+          if (pin == 11) { pin11_blinking = true; pin11_delay = ldelay;}              
+        }
+        // Lights off
+        else if (value == 0 ){
+          digitalWrite(pin, LOW);
+          if (pin == 13) { pin13_blinking = false; }
+            if (pin == 12) { pin12_blinking = false; }   
+            if (pin == 11) { pin11_blinking = false; }  
+          }
+        }
+    if (command ="drive") {motor_active = true; }
+    }
+  // returning the default state of serialEvent1()
+  stringComplete = false;
+  // clean json incoming data buffers
+  pin = NULL; value = NULL; ldelay = NULL;
+  inputString="";
+  inChar = NULL; JsonChar = NULL;
+  return;      
 }
 
 void setup() {
