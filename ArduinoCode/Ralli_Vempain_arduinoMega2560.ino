@@ -13,10 +13,9 @@
 // DHT11 lib & setup
 // Adafruit version
 // https://github.com/adafruit/DHT-sensor-library
-
 #include "DHT.h"
-#define DHTPIN  2       // 2 digital pin we're connected to
-#define DHTTYPE DHT11   // DHT 11
+#define DHTPIN  2       // 2 digital pin 
+#define DHTTYPE DHT11   
 DHT dht(DHTPIN, DHTTYPE);
 
 // initialization to enable multithreading features by using millis() functions  
@@ -26,7 +25,6 @@ unsigned long previousMillis = 0;       // will store last time sensor updated
 // will quickly become a bigger number than can be stored in an int.
 const long interval = 10000;            // Sensor data sending interval
 
-  
 // Json parser lib 
 // Copyright Benoit Blanchon 2014-2016
 // MIT License
@@ -36,7 +34,6 @@ const long interval = 10000;            // Sensor data sending interval
 // If you like this project, please add a star!
 #include <ArduinoJson.h>
 const char* command;
-
 // Json description:
 // https://github.com/jraivio/IoT-Ralli-Vempain/wiki
 
@@ -109,7 +106,6 @@ void JsonReportSensorDHT() {
     float hif = dht.computeHeatIndex(f, h);
     // Compute heat index in Celsius (isFahreheit = false)
     float hic = dht.computeHeatIndex(t, h, false);
-
     // Check if any reads failed and exit early (to try again).
     if (isnan(h) || isnan(t) || isnan(f)) {
         Serial.println("Failed to read from DHT sensor!");
@@ -145,12 +141,14 @@ void JsonReportSensorEdge() {
   if (motor_active = true) {
     while(1)  {
       delay(500);
-      if(digitalRead(6)==LOW)  {
-        Serial.println("Valkoinen.");
+      if(digitalRead(left_edge)==LOW && digitalRead(right_edge)==LOW )  { array.add(0,0);}
+      if(digitalRead(left_edge)==HIGH && digitalRead(right_edge)==LOW )  { array.add(1,0);}
+      if(digitalRead(left_edge)==LOW && digitalRead(right_edge)==HIGH )  { array.add(0,1);}
+      if(digitalRead(left_edge)==HIGH && digitalRead(right_edge)==HIGH )  { array.add(1,1);}
       }
-      else  {
-        Serial.println("Musta.");
-      }
+      root.printTo(rootJson); array.printTo(arrayJson); String JointJson = rootJson + ":" + arrayJson + "}";
+      //Serial.println("json string for edge:" + JointJson);
+      Serial1.println(JointJson);
     }
   }  
 }  
@@ -183,8 +181,8 @@ void JsonReportSensorRFID() {
     for (byte i = 0; i < 4; i++) {
       nuidPICC[i] = rfid.uid.uidByte[i];
       }   
-    Serial.println(F("The NUID tag is:"));
-    Serial.print(F("In dec: "));
+    //Serial.println(F("The NUID tag is:"));
+    //Serial.print(F("In dec: "));
     byte *buffer = rfid.uid.uidByte; 
     byte bufferSize = rfid.uid.size;
     String NUID = "";
@@ -333,8 +331,8 @@ void setup() {
     pinMode(12, OUTPUT);
     pinMode(11, OUTPUT);
     // Egde sensor input pins
-    pinMode(24,INPUT); // Right sensor
-    pinMode(22,INPUT); // Left sensor
+    int right_edge = 24; pinMode(right_edge,INPUT); // Right sensor
+    int left_edge = 22; pinMode(left_edge,INPUT); // Left sensor
     inputString.reserve(256); // reserve 256 bytes for the inputString:
     dht.begin(); // Init DHT
     SPI.begin(); // Init SPI bus
