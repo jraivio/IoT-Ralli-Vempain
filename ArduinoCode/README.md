@@ -16,10 +16,10 @@
 - [Ultrasonic HC-SR04 library for Arduino by J.Rodrigo] (https://github.com/JRodrigoTech/Ultrasonic-HC-SR04)    
 
 **Following functions in use:**  
-- `JsonReportSensorDHT()`: // DHT11 sensor data reader & json report creation    
-- `JsonReportSensorRFID()`: // RFID card reader sensor & json report creation    
-- `JsonReportSensorEdge()`: // Edge reader sensor & json report creation    
-- `JsonReportSensorDistance()`: // Ultrasonic distance reader sensor & json report creation    
+- `JsonReportSensorDHT()`: // DHT11 sensor data reader function & json report creation    
+- `JsonReportSensorRFID()`: // RFID card sensor reader function & json report creation    
+- `JsonReportSensorEdge()`: // Edge sensor reader function & json report creation    
+- `JsonReportSensorDistance()`: // Ultrasonic distance sensor reader function & json report creation    
 - `Motor()`:  // Motor control functions, adapted for L298N    
 - `serialEvent1()`: // Monitoring new serial events from esp  
 - `HandleIncommingJson()`: // json parser for incoming commands from esp    
