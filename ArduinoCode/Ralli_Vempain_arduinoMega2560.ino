@@ -56,9 +56,10 @@ byte nuidPICC[3];
 
 // Ultrasonic HC-SR04 library for Arduino by J.Rodrigo https://github.com/JRodrigoTech/Ultrasonic-HC-SR04
 // Json description: https://github.com/jraivio/IoT-Ralli-Vempain/wiki
+// Max distance 51 cm
 #include <Ultrasonic.h>
-#define TRIG_PIN   49     // Configurable Arduino pins for HC-SR04 Trig PIN
-#define ECHO_PIN   53  // Configurable Arduino pins for HC-SR04 Echo pins
+#define TRIG_PIN 10     // Configurable Arduino pins for HC-SR04 Trig PIN
+#define ECHO_PIN 9  // Configurable Arduino pins for HC-SR04 Echo pins
 Ultrasonic ultrasonic(TRIG_PIN,ECHO_PIN); 
 
 // Edge sensor pinouts
@@ -90,6 +91,12 @@ int pin11_delay;
 unsigned long pin13_previousMillis = 0;      // will store last time light delay update
 unsigned long pin12_previousMillis = 0;      // will store last time light delay update
 unsigned long pin11_previousMillis = 0;      // will store last time light delay update
+
+// millis for sensor reading interval while moving, delay 500 ms
+boolean sensor_moving = false;
+int sensor_moving_delay = 500;
+unsigned long sensor_moving_previousMillis = 0;      // will store last time light delay update
+
 
 void JsonReportSensorDHT() {
   // DHT functions
@@ -123,15 +130,13 @@ void JsonReportSensorDistance(){
   StaticJsonBuffer<512> jsonOutBuffer;   // 514 B
   String rootJson = ""; String arrayJson = "";
   JsonObject& root = jsonOutBuffer.createObject();
-  root["sensor"] = "Distance"; JsonArray& array = jsonOutBuffer.createArray();
-   while(1)  {
-    delay(500);
-    array.add(ultrasonic.Ranging(CM)); // CM or INC
+  root["sensor"] = "distance"; JsonArray& array = jsonOutBuffer.createArray();
+  array.add(ultrasonic.Ranging(CM)); // CM or INC
     // Debugging
     //Serial.print(ultrasonic.Ranging(CM)); // CM or INC
     //Serial.println(" cm" ); 
-    }
-    root.printTo(rootJson); array.printTo(arrayJson); String JointJson = rootJson + ":" + arrayJson + "}";
+  root.printTo(rootJson); array.printTo(arrayJson); String JointJson = rootJson + ":" + arrayJson + "}";
+    // Debugging
     //Serial.println("json string for edge:" + JointJson);
   Serial1.println(JointJson);
   return;
@@ -143,15 +148,13 @@ void JsonReportSensorEdge() {
   JsonObject& root = jsonOutBuffer.createObject();
   root["sensor"] = "edge"; JsonArray& array = jsonOutBuffer.createArray();
   int left; int right;
-   while(1)  {
-    delay(500);
-    if(digitalRead(left_edge)==LOW && digitalRead(right_edge)==LOW )  {  array.add(left=0);array.add(right=0);}
-    if(digitalRead(left_edge)==HIGH && digitalRead(right_edge)==LOW )  { array.add(left=1);array.add(right=0);}
-    if(digitalRead(left_edge)==LOW && digitalRead(right_edge)==HIGH )  { array.add(left=0);array.add(right=1);}
-    if(digitalRead(left_edge)==HIGH && digitalRead(right_edge)==HIGH )  { array.add(left=1);array.add(right=1);}
-   }
-   root.printTo(rootJson); array.printTo(arrayJson); String JointJson = rootJson + ":" + arrayJson + "}";
-   //Serial.println("json string for edge:" + JointJson);
+  if(digitalRead(left_edge)==LOW && digitalRead(right_edge)==LOW )  {  array.add(left=0);array.add(right=0);}
+  if(digitalRead(left_edge)==HIGH && digitalRead(right_edge)==LOW )  { array.add(left=1);array.add(right=0);}
+  if(digitalRead(left_edge)==LOW && digitalRead(right_edge)==HIGH )  { array.add(left=0);array.add(right=1);}
+  if(digitalRead(left_edge)==HIGH && digitalRead(right_edge)==HIGH )  { array.add(left=1);array.add(right=1);}
+  root.printTo(rootJson); array.printTo(arrayJson); String JointJson = rootJson + ":" + arrayJson + "}";
+    // Debuggung
+    //Serial.println("json string for edge:" + JointJson);
   Serial1.println(JointJson);
   return;
 }  
@@ -342,7 +345,7 @@ void setup() {
     SPI.begin(); // Init SPI bus
     rfid.PCD_Init(); // Init MFRC522 
     for (byte i = 0; i < 6; i++) { key.keyByte[i] = 0xFF; } // RFID byte handling
-    // HC-SR04 distance sensor setup (TBD)
+    // HC-SR04 distance sensor setup (TBD, currently fixed VCC/GND)
     //pinMode(4, OUTPUT); // VCC pin
     //pinMode(7, OUTPUT); // GND ping
     //digitalWrite(4, HIGH); // VCC +5V mode  
@@ -351,20 +354,23 @@ void setup() {
 void loop() {
     // update interval
     unsigned long currentMillis = millis();
-    unsigned long pin13_currentMillis = millis();
-    unsigned long pin12_currentMillis = millis();
-    unsigned long pin11_currentMillis = millis();
+    unsigned long pin13_currentMillis = millis(); unsigned long pin12_currentMillis = millis(); unsigned long pin11_currentMillis = millis(); 
     unsigned long mcurrentMillis = millis();
+    unsigned long sensor_moving_currentMillis = millis();
     // DHT Sensor reporting
     if (currentMillis - previousMillis >= interval) {
       // save the last time of sensor reporting
       previousMillis = currentMillis;    
       JsonReportSensorDHT();
+      if (motor_active == false) {JsonReportSensorDistance(); JsonReportSensorEdge();} // slow down reporting frequency in static cases
       //JsonReportSensorACC();
     }
-    if (motor_active == true) { // reporting only if motor is running
-      JsonReportSensorDistance();
-      JsonReportSensorEdge();
+    if (motor_active == true) { // speed up reporting frequency in case of moving
+      if (sensor_moving_currentMillis - sensor_moving_previousMillis >= sensor_moving_delay) {
+        sensor_moving_previousMillis = sensor_moving_currentMillis; 
+        JsonReportSensorDistance();
+        JsonReportSensorEdge();
+      }
     }
     // Look for new RFID cards
     if ( rfid.PICC_IsNewCardPresent()) { JsonReportSensorRFID(); }
@@ -398,6 +404,7 @@ void loop() {
     if (motor_active == true ) { 
         if (mcurrentMillis - mpreviousMillis >= mdelay) {
           mpreviousMillis = mcurrentMillis;         
-          Motor(); }
+          Motor(); 
+          return;}
     }  
  }
