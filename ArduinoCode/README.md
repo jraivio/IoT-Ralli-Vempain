@@ -13,6 +13,7 @@
 - [Temperature & Humidity sensor DHT11, Adafruit version] (https://github.com/adafruit/DHT-sensor-library)     
 - [JSON string parser, by Benoit Blanchon] (https://github.com/bblanchon/ArduinoJson)    
 - [RFID Card reader MFRC522, by Miguel Balboa] (https://github.com/miguelbalboa/rfid)    
+- [Ultrasonic HC-SR04 library for Arduino by J.Rodrigo] (https://github.com/JRodrigoTech/Ultrasonic-HC-SR04)    
 
 **Following functions in use:**  
 - `JsonReportSensorDHT()`: // DHT11 sensor data reader & json report creation    
