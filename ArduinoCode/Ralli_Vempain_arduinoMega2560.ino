@@ -9,10 +9,9 @@
 // No code changes are required for the esp-link
 // Github repository for esp-link https://github.com/jeelabs/esp-link
 
-// Temperature & Humidity sensor
-// DHT11 lib & setup
-// Adafruit version
-// https://github.com/adafruit/DHT-sensor-library
+// Temperature & Humidity sensor DHT11 lib & setup
+// Adafruit version, https://github.com/adafruit/DHT-sensor-library
+// Json description: https://github.com/jraivio/IoT-Ralli-Vempain/wiki
 #include "DHT.h"
 #define DHTPIN  2       // 2 digital pin 
 #define DHTTYPE DHT11   
@@ -25,21 +24,15 @@ unsigned long previousMillis = 0;       // will store last time sensor updated
 // will quickly become a bigger number than can be stored in an int.
 const long interval = 10000;            // Sensor data sending interval
 
-// Json parser lib 
-// Copyright Benoit Blanchon 2014-2016
-// MIT License
-//
-// Arduino JSON library
+// Json parser lib Copyright Benoit Blanchon 2014-2016, MIT License
 // https://github.com/bblanchon/ArduinoJson
-// If you like this project, please add a star!
+// Json description: https://github.com/jraivio/IoT-Ralli-Vempain/wiki
 #include <ArduinoJson.h>
 const char* command;
 // Serial data handling, global variables
 String inputString = "";         // a string to hold incoming data
 boolean stringComplete = false;  // whether the string is complete
 char inChar; // a char to handle incoming data
-// Json description:
-// https://github.com/jraivio/IoT-Ralli-Vempain/wiki
 
 /* ------------------------------------
   * RFID Card reader MFRC522 by Miguel Balboa https://github.com/miguelbalboa/rfid
@@ -62,6 +55,7 @@ MFRC522::MIFARE_Key key;
 byte nuidPICC[3];
 
 // Ultrasonic HC-SR04 library for Arduino by J.Rodrigo https://github.com/JRodrigoTech/Ultrasonic-HC-SR04
+// Json description: https://github.com/jraivio/IoT-Ralli-Vempain/wiki
 #include <Ultrasonic.h>
 #define TRIG_PIN   49     // Configurable Arduino pins for HC-SR04 Trig PIN
 #define ECHO_PIN   53  // Configurable Arduino pins for HC-SR04 Echo pins
@@ -94,7 +88,6 @@ unsigned long pin12_previousMillis = 0;      // will store last time light delay
 unsigned long pin11_previousMillis = 0;      // will store last time light delay update
 
 void JsonReportSensorDHT() {
-
     // DHT functions
     // Reading temperature or humidity takes about 250 milliseconds!
     // Sensor readings may also be up to 2 seconds 'old' (its a very slow sensor)
@@ -126,7 +119,25 @@ void JsonReportSensorDHT() {
     return;
 }
 
-void JsonReportSensorDistance(){}  // TBD
+void JsonReportSensorDistance(){
+  StaticJsonBuffer<512> jsonOutBuffer;   // 514 B
+  String rootJson = ""; String arrayJson = "";
+  JsonObject& root = jsonOutBuffer.createObject();
+  root["sensor"] = "Distance"; JsonArray& array = jsonOutBuffer.createArray();
+   if (motor_active = true) {
+    while(1)  {
+      delay(500);
+      array.add(ultrasonic.Ranging(CM)); // CM or INC
+      // Debugging
+      //Serial.print(ultrasonic.Ranging(CM)); // CM or INC
+      //Serial.println(" cm" ); 
+      }
+      root.printTo(rootJson); array.printTo(arrayJson); String JointJson = rootJson + ":" + arrayJson + "}";
+      //Serial.println("json string for edge:" + JointJson);
+      Serial1.println(JointJson);
+    return;
+   }
+}  
 void JsonReportSensorACC(){}       // TBD
 void JsonReportSensorEdge() {
   StaticJsonBuffer<512> jsonOutBuffer;   // 514 B
@@ -348,20 +359,21 @@ void loop() {
     unsigned long pin12_currentMillis = millis();
     unsigned long pin11_currentMillis = millis();
     unsigned long mcurrentMillis = millis();
-    // Sensors
+    // DHT Sensor reporting
     if (currentMillis - previousMillis >= interval) {
       // save the last time of sensor reporting
       previousMillis = currentMillis;    
       JsonReportSensorDHT();
-      //JsonReportSensorDistance();
       //JsonReportSensorACC();
-      //JsonReportSensorEdge();
+    }
+    if (motor_active == true) { // reporting only if motor is running
+      JsonReportSensorDistance();
+      JsonReportSensorEdge();
     }
     // Look for new RFID cards
     if ( rfid.PICC_IsNewCardPresent()) { JsonReportSensorRFID(); }
     // Handling incoming Json from serial port 
-    // JSon serial read
-    // print the string when a newline arrives:
+    // JSon serial read, print the string when a newline arrives:
     serialEvent1(); if (stringComplete == true) { HandleIncommingJson();}
     // Light blinking
     if ( pin13_blinking == true){
