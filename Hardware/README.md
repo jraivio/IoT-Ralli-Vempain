@@ -22,7 +22,8 @@ Wiring diagram is designed by [Fritzing tool.](http://fritzing.org/home/) The so
 - [IOT Wifi-serial bridge: ESP8266-01] (https://www.adafruit.com/images/product-files/2471/0A-ESP8266__Datasheet__EN_v4.3.pdf)
 - [Frame, Wheels and DC motor] (http://www.aliexpress.com/item/New-Motor-Smart-Robot-Car-Chassis-Kit-Speed-Encoder-Battery-Box-For-Arduino-Free-Shipping/1924502066.html)
 - [Battery 2 x 3.7V: 18650] (https://www.reddit.com/r/flashlight/wiki/18650)
-
+- [400 Point Breadboard] (http://www.aliexpress.com/item/400-Tie-Point-Interlocking-Solderless-mini-Breadboard-Free-Shipping-Dropshipping/1248613686.html)
+- [3.3v regulator: AMS1117] (http://www.aliexpress.com/item/1pc-DC-DC-AMS1117-1-2V-Step-Down-Voltage-Regulator-Adapter-Convertor-2P-Single-Row-Hot/32369895833.html)
 
 
 ###esp8266 - esp-link:    
