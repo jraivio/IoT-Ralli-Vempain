@@ -18,6 +18,8 @@
 **Following functions in use:**  
 - `JsonReportSensorDHT()`: // DHT11 sensor data reader & json report creation    
 - `JsonReportSensorRFID()`: // RFID card reader sensor & json report creation    
+- `JsonReportSensorEdge()`: // Edge reader sensor & json report creation    
+- `JsonReportSensorDistance()`: // Ultrasonic distance reader sensor & json report creation    
 - `Motor()`:  // Motor control functions, adapted for L298N    
 - `serialEvent1()`: // Monitoring new serial events from esp  
 - `HandleIncommingJson()`: // json parser for incoming commands from esp    
