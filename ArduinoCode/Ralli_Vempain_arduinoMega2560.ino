@@ -34,13 +34,15 @@ const long interval = 10000;            // Sensor data sending interval
 // If you like this project, please add a star!
 #include <ArduinoJson.h>
 const char* command;
+// Serial data handling, global variables
+String inputString = "";         // a string to hold incoming data
+boolean stringComplete = false;  // whether the string is complete
+char inChar; // a char to handle incoming data
 // Json description:
 // https://github.com/jraivio/IoT-Ralli-Vempain/wiki
 
 /* ------------------------------------
-  * RFID Card reader MFRC522
-  * By Miguel Balboa
-  * https://github.com/miguelbalboa/rfid
+  * RFID Card reader MFRC522 by Miguel Balboa https://github.com/miguelbalboa/rfid
   * Signal      MFRC522      Mega 2560
   *             Pin          Pin       ´
   * -------------------------------------
@@ -50,9 +52,8 @@ const char* command;
   * SPI MISO    MISO         50        
   * SPI SCK     SCK          52        
 */
-
-#include <SPI.h>
-#include <MFRC522.h>
+#include <SPI.h> // Arduino default SPI library
+#include <MFRC522.h> 
 #define RST_PIN   49     // Configurable, see typical pin layout above (valk)
 #define SS_PIN    53    // Configurable, see typical pin layout above (vihr)
 MFRC522 rfid(SS_PIN, RST_PIN); // Instance of the class
@@ -60,10 +61,11 @@ MFRC522::MIFARE_Key key;
 // Init array that will store new NUID 
 byte nuidPICC[3];
 
-// Serial data handling, global variables
-String inputString = "";         // a string to hold incoming data
-boolean stringComplete = false;  // whether the string is complete
-char inChar; // a char to handle incoming data
+// Ultrasonic HC-SR04 library for Arduino by J.Rodrigo https://github.com/JRodrigoTech/Ultrasonic-HC-SR04
+#include <Ultrasonic.h>
+#define TRIG_PIN   49     // Configurable Arduino pins for HC-SR04 Trig PIN
+#define ECHO_PIN   53  // Configurable Arduino pins for HC-SR04 Echo pins
+Ultrasonic ultrasonic(TRIG_PIN,ECHO_PIN); 
 
 // Motor driver Setup
 // Pins L298N -> Mega board
@@ -316,22 +318,28 @@ void HandleIncommingJson() {
 }
 void setup() {
     // initialize both serial ports:
-    Serial.begin(9600);
+    Serial.begin(9600); // Debugging
     delay(1000);
-    Serial1.begin(115200);
+    Serial1.begin(115200); // Serial for esp8266
     delay(1000);
     // initialize digital pin 13-11 as an output (for LEDs)
-    pinMode(13, OUTPUT);
-    pinMode(12, OUTPUT);
+    pinMode(13, OUTPUT); // Main lights leds
+    pinMode(12, OUTPUT); // Direction lights
     pinMode(11, OUTPUT);
     // Egde sensor input pins
     int right_edge = 24; pinMode(right_edge,INPUT); // Right sensor
     int left_edge = 22; pinMode(left_edge,INPUT); // Left sensor
     inputString.reserve(256); // reserve 256 bytes for the inputString:
     dht.begin(); // Init DHT
+    // RFID setup
     SPI.begin(); // Init SPI bus
     rfid.PCD_Init(); // Init MFRC522 
     for (byte i = 0; i < 6; i++) { key.keyByte[i] = 0xFF; } // RFID byte handling
+    // HC-SR04 distance sensor setup (TBD)
+    //pinMode(4, OUTPUT); // VCC pin
+    //pinMode(7, OUTPUT); // GND ping
+    //digitalWrite(4, HIGH); // VCC +5V mode  
+    //digitalWrite(7, LOW);  // GND mode
 }
 void loop() {
     // update interval
