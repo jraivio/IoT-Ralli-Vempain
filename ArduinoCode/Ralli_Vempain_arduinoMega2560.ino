@@ -88,14 +88,10 @@ unsigned long pin12_previousMillis = 0;      // will store last time light delay
 unsigned long pin11_previousMillis = 0;      // will store last time light delay update
 
 void JsonReportSensorDHT() {
-    // DHT functions
-    // Reading temperature or humidity takes about 250 milliseconds!
-    // Sensor readings may also be up to 2 seconds 'old' (its a very slow sensor)
-    // e.g results from serial {"sensor":"temp_hum"}:[22.00,36.00]}
-    float h = dht.readHumidity();
-    // Read temperature as Celsius (the default)
-    float t = dht.readTemperature();
-    // Read temperature as Fahrenheit (isFahrenheit = true)
+  // DHT functions
+  // Reading temperature or humidity takes about 250 milliseconds!
+  float h = dht.readHumidity();  float t = dht.readTemperature();
+  // Read temperature as Fahrenheit (isFahrenheit = true)
     float f = dht.readTemperature(true);
     // Compute heat index in Fahrenheit (the default)
     float hif = dht.computeHeatIndex(f, h);
@@ -103,7 +99,8 @@ void JsonReportSensorDHT() {
     float hic = dht.computeHeatIndex(t, h, false);
     // Check if any reads failed and exit early (to try again).
     if (isnan(h) || isnan(t) || isnan(f)) {
-        Serial.println("Failed to read from DHT sensor!");
+        // Debugging
+        //Serial.println("Failed to read from DHT sensor!");
         return;
     }
     // Create Json for sensor print out
@@ -111,8 +108,7 @@ void JsonReportSensorDHT() {
     String rootJson = ""; String arrayJson = "";
     JsonObject& root = jsonOutBuffer.createObject();
     root["sensor"] = "temp_hum"; JsonArray& array = jsonOutBuffer.createArray();
-    array.add(t);
-    array.add(h);
+    array.add(t); array.add(h);
     // Print to Serial
     root.printTo(rootJson); array.printTo(arrayJson); String JointJson = rootJson + ":" + arrayJson + "}";
     Serial1.println(JointJson);
@@ -124,19 +120,17 @@ void JsonReportSensorDistance(){
   String rootJson = ""; String arrayJson = "";
   JsonObject& root = jsonOutBuffer.createObject();
   root["sensor"] = "Distance"; JsonArray& array = jsonOutBuffer.createArray();
-   if (motor_active = true) {
-    while(1)  {
-      delay(500);
-      array.add(ultrasonic.Ranging(CM)); // CM or INC
-      // Debugging
-      //Serial.print(ultrasonic.Ranging(CM)); // CM or INC
-      //Serial.println(" cm" ); 
-      }
-      root.printTo(rootJson); array.printTo(arrayJson); String JointJson = rootJson + ":" + arrayJson + "}";
-      //Serial.println("json string for edge:" + JointJson);
-      Serial1.println(JointJson);
-    return;
-   }
+   while(1)  {
+    delay(500);
+    array.add(ultrasonic.Ranging(CM)); // CM or INC
+    // Debugging
+    //Serial.print(ultrasonic.Ranging(CM)); // CM or INC
+    //Serial.println(" cm" ); 
+    }
+    root.printTo(rootJson); array.printTo(arrayJson); String JointJson = rootJson + ":" + arrayJson + "}";
+    //Serial.println("json string for edge:" + JointJson);
+  Serial1.println(JointJson);
+  return;
 }  
 void JsonReportSensorACC(){}       // TBD
 void JsonReportSensorEdge() {
@@ -144,20 +138,17 @@ void JsonReportSensorEdge() {
   String rootJson = ""; String arrayJson = "";
   JsonObject& root = jsonOutBuffer.createObject();
   root["sensor"] = "edge"; JsonArray& array = jsonOutBuffer.createArray();
-  if (motor_active = true) {
-    while(1)  {
-      delay(500);
-      if(digitalRead(left_edge)==LOW && digitalRead(right_edge)==LOW )  { array.add(0,0);}
-      if(digitalRead(left_edge)==HIGH && digitalRead(right_edge)==LOW )  { array.add(1,0);}
-      if(digitalRead(left_edge)==LOW && digitalRead(right_edge)==HIGH )  { array.add(0,1);}
-      if(digitalRead(left_edge)==HIGH && digitalRead(right_edge)==HIGH )  { array.add(1,1);}
-      }
-      root.printTo(rootJson); array.printTo(arrayJson); String JointJson = rootJson + ":" + arrayJson + "}";
-      //Serial.println("json string for edge:" + JointJson);
-      Serial1.println(JointJson);
-    return;
-    }
-  }  
+   while(1)  {
+    delay(500);
+    if(digitalRead(left_edge)==LOW && digitalRead(right_edge)==LOW )  { array.add(0,0);}
+    if(digitalRead(left_edge)==HIGH && digitalRead(right_edge)==LOW )  { array.add(1,0);}
+    if(digitalRead(left_edge)==LOW && digitalRead(right_edge)==HIGH )  { array.add(0,1);}
+    if(digitalRead(left_edge)==HIGH && digitalRead(right_edge)==HIGH )  { array.add(1,1);}
+   }
+   root.printTo(rootJson); array.printTo(arrayJson); String JointJson = rootJson + ":" + arrayJson + "}";
+   //Serial.println("json string for edge:" + JointJson);
+  Serial1.println(JointJson);
+  return;
 }  
 void JsonReportSensorRFID() {
   if ( ! rfid.PICC_ReadCardSerial()) 
