@@ -61,6 +61,10 @@ byte nuidPICC[3];
 #define ECHO_PIN   53  // Configurable Arduino pins for HC-SR04 Echo pins
 Ultrasonic ultrasonic(TRIG_PIN,ECHO_PIN); 
 
+// Edge sensor pinouts
+#define right_edge 24 // Right sensor
+#define left_edge 22 // Left sensor
+
 // Motor driver Setup
 // Pins L298N -> Mega board
 int enA = 8;
@@ -138,12 +142,13 @@ void JsonReportSensorEdge() {
   String rootJson = ""; String arrayJson = "";
   JsonObject& root = jsonOutBuffer.createObject();
   root["sensor"] = "edge"; JsonArray& array = jsonOutBuffer.createArray();
+  int left; int right;
    while(1)  {
     delay(500);
-    if(digitalRead(left_edge)==LOW && digitalRead(right_edge)==LOW )  { array.add(0,0);}
-    if(digitalRead(left_edge)==HIGH && digitalRead(right_edge)==LOW )  { array.add(1,0);}
-    if(digitalRead(left_edge)==LOW && digitalRead(right_edge)==HIGH )  { array.add(0,1);}
-    if(digitalRead(left_edge)==HIGH && digitalRead(right_edge)==HIGH )  { array.add(1,1);}
+    if(digitalRead(left_edge)==LOW && digitalRead(right_edge)==LOW )  {  array.add(left=0);array.add(right=0);}
+    if(digitalRead(left_edge)==HIGH && digitalRead(right_edge)==LOW )  { array.add(left=1);array.add(right=0);}
+    if(digitalRead(left_edge)==LOW && digitalRead(right_edge)==HIGH )  { array.add(left=0);array.add(right=1);}
+    if(digitalRead(left_edge)==HIGH && digitalRead(right_edge)==HIGH )  { array.add(left=1);array.add(right=1);}
    }
    root.printTo(rootJson); array.printTo(arrayJson); String JointJson = rootJson + ":" + arrayJson + "}";
    //Serial.println("json string for edge:" + JointJson);
@@ -329,8 +334,8 @@ void setup() {
     pinMode(12, OUTPUT); // Direction lights
     pinMode(11, OUTPUT);
     // Egde sensor input pins
-    int right_edge = 24; pinMode(right_edge,INPUT); // Right sensor
-    int left_edge = 22; pinMode(left_edge,INPUT); // Left sensor
+    pinMode(right_edge,INPUT); // Right sensor
+    pinMode(left_edge,INPUT); // Left sensor
     inputString.reserve(256); // reserve 256 bytes for the inputString:
     dht.begin(); // Init DHT
     // RFID setup
