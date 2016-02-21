@@ -12,6 +12,16 @@ _Note that layout description is overal. L298N requires additional control pinou
 
 Wiring diagram is designed by [Fritzing tool.](http://fritzing.org/home/) The source code of the above wiring diagram is available also in this [IOT-Ralli-Vempain repository](https://github.com/jraivio/IoT-Ralli-Vempain/blob/master/Hardware/Rally_Droid2.fzz)
 
+###List of selected hardware:
+- [Microcontroller: Arduino Mega2560] (https://www.arduino.cc/en/Main/ArduinoBoardMega2560)
+- [H-Bridge motor driver: L298N] (http://www.geeetech.com/wiki/index.php/L298N_Motor_Driver_Board)
+- [Distance sensor: HC-SR04] (http://www.electroschematics.com/8902/hc-sr04-datasheet/)
+- [Temperature and Humidity sensor: DHT11] (http://www.micropik.com/PDF/dht11.pdf)
+- [RFID reader/writer: Mifare 13.56Mhz RC522] (http://www.nxp.com/documents/data_sheet/MFRC522.pdf)
+- [Infrared line track Sensor: TCRT5000] (http://www.aliexpress.com/item/Sensor-For-Arduino-LM393-IR-Infrared-Line-Tracking-Transducer-TCRT5000-Obstacle-Avoidance-Module-Board-Photoelectric-Switch/32591217818.html)
+- [IOT Wifi-serial bridge: ESP8266-01] (https://www.adafruit.com/images/product-files/2471/0A-ESP8266__Datasheet__EN_v4.3.pdf)
+- [Frame, Wheels and DC motor] (http://www.aliexpress.com/item/New-Motor-Smart-Robot-Car-Chassis-Kit-Speed-Encoder-Battery-Box-For-Arduino-Free-Shipping/1924502066.html)
+- [Battery 2 x 3.7V: 18650] (https://www.reddit.com/r/flashlight/wiki/18650)
 
 
 
