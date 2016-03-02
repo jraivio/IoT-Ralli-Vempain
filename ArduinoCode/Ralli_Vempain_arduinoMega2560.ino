@@ -1,5 +1,5 @@
 // IOT RalliDroid  
-// Copyright Jukka Raivio 2016
+// Copyright Jukka Raivio and Jussi Salonen 2016
 // MIT License
 // 
 // Example code is based on Arduino Mega2560 
@@ -76,10 +76,14 @@ int in4 = 7;
 int enB = 3;
 boolean motor_active = false;
 // for motor delay
-unsigned long mpreviousMillis = 0;      // will store last time motor delay update
+unsigned long mStartMillis = 0;      // will store last time motor delay update
 int course; // direction
 int mspeed; // motor speed
 int mdelay; // motor delay
+// millis for sensor reading interval while moving, delay 500 ms
+boolean sensor_moving = false;
+int sensor_moving_reports = 500;
+unsigned long sensor_moving_previousMillis = 0;      // will store last time light delay update
 
 // light blinking 
 boolean pin13_blinking = false;
@@ -92,10 +96,6 @@ unsigned long pin13_previousMillis = 0;      // will store last time light delay
 unsigned long pin12_previousMillis = 0;      // will store last time light delay update
 unsigned long pin11_previousMillis = 0;      // will store last time light delay update
 
-// millis for sensor reading interval while moving, delay 500 ms
-boolean sensor_moving = false;
-int sensor_moving_delay = 500;
-unsigned long sensor_moving_previousMillis = 0;      // will store last time light delay update
 
 
 void JsonReportSensorDHT() {
@@ -142,16 +142,17 @@ void JsonReportSensorDistance(){
   return;
 }  
 void JsonReportSensorACC(){}       // TBD
+
 void JsonReportSensorEdge() {
   StaticJsonBuffer<512> jsonOutBuffer;   // 514 B
   String rootJson = ""; String arrayJson = "";
   JsonObject& root = jsonOutBuffer.createObject();
-  root["sensor"] = "edge"; JsonArray& array = jsonOutBuffer.createArray();
-  int left; int right;
-  if(digitalRead(left_edge)==LOW && digitalRead(right_edge)==LOW )  {  array.add(left=0);array.add(right=0);}
-  if(digitalRead(left_edge)==HIGH && digitalRead(right_edge)==LOW )  { array.add(left=1);array.add(right=0);}
-  if(digitalRead(left_edge)==LOW && digitalRead(right_edge)==HIGH )  { array.add(left=0);array.add(right=1);}
-  if(digitalRead(left_edge)==HIGH && digitalRead(right_edge)==HIGH )  { array.add(left=1);array.add(right=1);}
+  root["sensor"] = "edge"; 
+  JsonArray& array = jsonOutBuffer.createArray();
+  
+  array.add( digitalRead(left_edge) );
+  array.add( digitalRead(right_edge) );
+  
   root.printTo(rootJson); array.printTo(arrayJson); String JointJson = rootJson + ":" + arrayJson + "}";
     // Debuggung
     //Serial.println("json string for edge:" + JointJson);
@@ -210,49 +211,48 @@ void JsonReportSensorRFID() {
   rfid.PCD_StopCrypto1(); // Stop encryption on PCD
   return;  
 }
-void Motor()
+
+void driveMotors()
 {
     // this function will run the motors across the range of possible speeds
     // note that maximum speed is determined by the motor itself and the operating voltage
     // the PWM values sent by analogWrite() are fractions of the maximum speed possible by your hardware
-    // Drive Forward
-    if (course == 1) {
+      // Drive Forward  
+      if (course == 1) {
         digitalWrite(in1, HIGH); digitalWrite(in2, LOW); digitalWrite(in3, HIGH); digitalWrite(in4, LOW); 
         analogWrite(enA, mspeed); analogWrite(enB, mspeed);
-        delay(mdelay);
-    }
-    // Drive Backward
-    else if (course == 2) {
+      }
+      // Drive Backward
+      else if (course == 2 ) {
         digitalWrite(in1, LOW); digitalWrite(in2, HIGH); digitalWrite(in3, LOW); digitalWrite(in4, HIGH); 
         analogWrite(enA, mspeed); analogWrite(enB, mspeed);
-        delay(mdelay);
-    }
-    // Turn Right, direction forward
-    else if (course == 3) {
+      }
+      // Turn Right, direction forward
+      else if (course == 3 ) {
         digitalWrite(in1, LOW); digitalWrite(in2, LOW); digitalWrite(in3, HIGH); digitalWrite(in4, LOW); 
         analogWrite(enA, mspeed); analogWrite(enB, mspeed);
-        delay(mdelay);
-    }
-    // Turn Left, direction forward
-    else if (course == 4) {
+      }
+      // Turn Left, direction forward
+      else if (course == 4 ) {
         digitalWrite(in1, HIGH); digitalWrite(in2, LOW); digitalWrite(in3, LOW); digitalWrite(in4, LOW); 
         analogWrite(enA, mspeed); analogWrite(enB, mspeed);
-        delay(mdelay);
-    }
-    // Stop with delay
-    else if (course == 0) {
+      }
+      // Stop
+      else if (course == 0) {
         // now turn off motors
         digitalWrite(in1, LOW); digitalWrite(in2, LOW); digitalWrite(in3, LOW); digitalWrite(in4, LOW);  
-        delay(mdelay);
-    }
-    // now turn off motors
+      }  
+}
+
+void stopMotors() {
+      // now turn off motors
     // clean up & return
     digitalWrite(in1, LOW); digitalWrite(in2, LOW); digitalWrite(in3, LOW); digitalWrite(in4, LOW);
     course = NULL;
     mspeed = NULL;
     mdelay = NULL;
     motor_active = false;
-    return;
+    // return;
 }
 /*
   SerialEvent occurs whenever a new data comes in the
@@ -273,19 +273,20 @@ void serialEvent1() {
     }
   }
 }
-void HandleIncommingJson() {
+void HandleIncomingJson() {
     StaticJsonBuffer<512> jsonInBuffer;                 
     const char *JsonChar = inputString.c_str(); // 1 KB
     JsonObject& root = jsonInBuffer.parseObject(JsonChar);
     int pin;
     int value;
     int ldelay;
+    
     // Verify Json 
     if (JsonChar!=NULL && !root.success()) {
       Serial.println("parseObject() failed: ");
       Serial.println(JsonChar);
     }
-      else {
+    else {
         // Led pins 13-11
         command = root["command"];
         pin = root["data"][0];
@@ -316,7 +317,7 @@ void HandleIncommingJson() {
             if (pin == 11) { pin11_blinking = false; }  
           }
         }
-    if (command ="drive") {motor_active = true; }
+    if (command ="drive") {motor_active = true; mStartMillis = millis();}
     }
   // returning the default state of serialEvent1()
   stringComplete = false;
@@ -354,9 +355,6 @@ void setup() {
 void loop() {
     // update interval
     unsigned long currentMillis = millis();
-    unsigned long pin13_currentMillis = millis(); unsigned long pin12_currentMillis = millis(); unsigned long pin11_currentMillis = millis(); 
-    unsigned long mcurrentMillis = millis();
-    unsigned long sensor_moving_currentMillis = millis();
     // DHT Sensor reporting
     if (currentMillis - previousMillis >= interval) {
       // save the last time of sensor reporting
@@ -366,8 +364,8 @@ void loop() {
       //JsonReportSensorACC();
     }
     if (motor_active == true) { // speed up reporting frequency in case of moving
-      if (sensor_moving_currentMillis - sensor_moving_previousMillis >= sensor_moving_delay) {
-        sensor_moving_previousMillis = sensor_moving_currentMillis; 
+      currentMillis = millis();
+      if (currentMillis - mStartMillis >= sensor_moving_reports ) {
         JsonReportSensorDistance();
         JsonReportSensorEdge();
       }
@@ -376,35 +374,42 @@ void loop() {
     if ( rfid.PICC_IsNewCardPresent()) { JsonReportSensorRFID(); }
     // Handling incoming Json from serial port 
     // JSon serial read, print the string when a newline arrives:
-    serialEvent1(); if (stringComplete == true) { HandleIncommingJson();}
+    serialEvent1(); if (stringComplete == true) { HandleIncomingJson();}
+    
     // Light blinking
     if ( pin13_blinking == true){
-        if (pin13_currentMillis - pin13_previousMillis >= pin13_delay) {
-          pin13_previousMillis = pin13_currentMillis; 
+      currentMillis = millis();
+      if ( currentMillis - pin13_previousMillis >= pin13_delay ) {
+          pin13_previousMillis = currentMillis; 
           if (digitalRead(13) == LOW) { digitalWrite(13, HIGH);
           } else { digitalWrite(13, LOW); }
         }
     }                       
     if ( pin12_blinking == true){
-        if (pin12_currentMillis - pin12_previousMillis >= pin12_delay) {
-          pin12_previousMillis = pin12_currentMillis; 
-          if (digitalRead(12) == LOW) { digitalWrite(12, HIGH);
-          } else { digitalWrite(12, LOW); }
+      currentMillis = millis();
+      if (currentMillis - pin12_previousMillis >= pin12_delay) {
+        pin12_previousMillis = currentMillis; 
+        if (digitalRead(12) == LOW) { 
+          digitalWrite(12, HIGH);
+        } else { 
+          digitalWrite(12, LOW); }
         }             
     }
     if ( pin11_blinking == true){
-        if (pin11_currentMillis - pin11_previousMillis >= pin11_delay) {
-          pin11_previousMillis = pin11_currentMillis; 
-          if (digitalRead(11) == LOW) { digitalWrite(11, HIGH);
-          } else { digitalWrite(11, LOW); }
+      currentMillis = millis();
+      if ( currentMillis - pin11_previousMillis >= pin11_delay) {
+        pin11_previousMillis = currentMillis; 
+        if (digitalRead(11) == LOW) { 
+          digitalWrite(11, HIGH);
+        } else { 
+          digitalWrite(11, LOW); }
         }             
     }     
-    // Start engine
-    // TODO motor function interrupts still all other functions
-    if (motor_active == true ) { 
-        if (mcurrentMillis - mpreviousMillis >= mdelay) {
-          mpreviousMillis = mcurrentMillis;         
-          Motor(); 
-          return;}
+    // Drive motors
+    if (motor_active == true ) {
+       currentMillis = millis();
+       driveMotors();
+       if (currentMillis - mStartMillis >= mdelay) {       
+        stopMotors(); }           
     }  
  }
