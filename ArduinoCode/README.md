@@ -14,6 +14,7 @@
 - [JSON string parser, by Benoit Blanchon] (https://github.com/bblanchon/ArduinoJson)    
 - [RFID Card reader MFRC522, by Miguel Balboa] (https://github.com/miguelbalboa/rfid)    
 - [Ultrasonic HC-SR04 library for Arduino by J.Rodrigo] (https://github.com/JRodrigoTech/Ultrasonic-HC-SR04)    
+- [RTC DS1307 library by adafruit] (https://github.com/adafruit/RTClib)    
 
 **Following functions in use:**  
 - `JsonReportSensorDHT()`: // DHT11 sensor data reader function & json report creation    
