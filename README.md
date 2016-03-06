@@ -16,7 +16,7 @@ Source code type of approach is mandatory. All used 3rd party libraries in this 
 - [Open Electronics is the brainchild of a world leader in hobby electronics] (http://www.open-electronics.org)   
 - [Arduino Course for Absolute Beginners] (https://www.youtube.com/watch?v=09zfRaLEasY)    
 - [ESP8266 - Getting Started & Connected] (https://www.youtube.com/watch?v=z07zjfOHb8E)    
-- [This project is using 3rd party libraries. The library bundle can be copied here to your local ...'Arduino/libraries' folder as such or alternatively you could downlod the latest versions from the original github location] (https://github.com/jraivio/IoT-Ralli-Vempain/tree/master/ArduinoCode/libraries)     
+- [This project is using 3rd party libraries. The library bundle can be copied here to your local ...'Arduino/libraries' folder as such or alternatively you could download the latest versions from the original github location.] (https://github.com/jraivio/IoT-Ralli-Vempain/tree/master/ArduinoCode/libraries)     
 
 
  
