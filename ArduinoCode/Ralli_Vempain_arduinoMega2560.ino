@@ -17,7 +17,16 @@
 #define DHTTYPE DHT11   
 DHT dht(DHTPIN, DHTTYPE);
 
-// initialization to enable multithreading features by using millis() functions  
+
+// I2C library
+#include <Wire.h>
+// RTC library by adafruit https://github.com/adafruit/RTClib
+#include "RTClib.h"
+RTC_DS1307 RTC;
+String TimeStr ="";
+
+// Multitasking functions by Arduino millis
+// Initialization to enable multithreading features by using millis() functions  
 // Sensor update interval
 unsigned long previousMillis = 0;       // will store last time sensor updated
 // the follow variables is a long because the time, measured in miliseconds,
@@ -34,8 +43,9 @@ String inputString = "";         // a string to hold incoming data
 boolean stringComplete = false;  // whether the string is complete
 char inChar; // a char to handle incoming data
 
+// RFID tag reader (NFC) MFRC522
 /* ------------------------------------
-  * RFID Card reader MFRC522 by Miguel Balboa https://github.com/miguelbalboa/rfid
+  * RFID Card reader MFRC522 library by Miguel Balboa https://github.com/miguelbalboa/rfid
   * Signal      MFRC522      Mega 2560
   *             Pin          Pin       ´
   * -------------------------------------
@@ -99,6 +109,7 @@ unsigned long pin11_previousMillis = 0;      // will store last time light delay
 
 
 void JsonReportSensorDHT() {
+ 
   // DHT functions
   // Reading temperature or humidity takes about 250 milliseconds!
   float h = dht.readHumidity();  float t = dht.readTemperature();
@@ -118,7 +129,7 @@ void JsonReportSensorDHT() {
     StaticJsonBuffer<512> jsonOutBuffer;   // 514 B
     String rootJson = ""; String arrayJson = "";
     JsonObject& root = jsonOutBuffer.createObject();
-    root["sensor"] = "temp_hum"; JsonArray& array = jsonOutBuffer.createArray();
+    root["sensor"] = "temp_hum"; root["time"] =  TimeStr; JsonArray& array = jsonOutBuffer.createArray();
     array.add(t); array.add(h);
     // Print to Serial
     root.printTo(rootJson); array.printTo(arrayJson); String JointJson = rootJson + ":" + arrayJson + "}";
@@ -127,10 +138,11 @@ void JsonReportSensorDHT() {
 }
 
 void JsonReportSensorDistance(){
+
   StaticJsonBuffer<512> jsonOutBuffer;   // 514 B
   String rootJson = ""; String arrayJson = "";
   JsonObject& root = jsonOutBuffer.createObject();
-  root["sensor"] = "distance"; JsonArray& array = jsonOutBuffer.createArray();
+  root["sensor"] = "distance"; root["time"] =  TimeStr; JsonArray& array = jsonOutBuffer.createArray();
   array.add(ultrasonic.Ranging(CM)); // CM or INC
     // Debugging
     //Serial.print(ultrasonic.Ranging(CM)); // CM or INC
@@ -144,18 +156,18 @@ void JsonReportSensorDistance(){
 void JsonReportSensorACC(){}       // TBD
 
 void JsonReportSensorEdge() {
-  StaticJsonBuffer<512> jsonOutBuffer;   // 514 B
+   StaticJsonBuffer<512> jsonOutBuffer;   // 514 B
   String rootJson = ""; String arrayJson = "";
   JsonObject& root = jsonOutBuffer.createObject();
   root["sensor"] = "edge"; 
+  root["time"] =  TimeStr;
   JsonArray& array = jsonOutBuffer.createArray();
-  
   array.add( digitalRead(left_edge) );
   array.add( digitalRead(right_edge) );
   
   root.printTo(rootJson); array.printTo(arrayJson); String JointJson = rootJson + ":" + arrayJson + "}";
-    // Debuggung
-    //Serial.println("json string for edge:" + JointJson);
+  // Debuggung
+  //Serial.println("json string for edge:" + JointJson);
   Serial1.println(JointJson);
   return;
 }  
@@ -262,10 +274,8 @@ void stopMotors() {
  */
 void serialEvent1() {
   while (Serial1.available()> 0) {
-    // get the new byte:
-    inChar = (char)Serial1.read();
-    // add it to the inputString:
-    inputString += inChar;
+    inChar = (char)Serial1.read(); // get the new byte: 
+    inputString += inChar; // add it to the inputString:
     // if the incoming character is a newline, set a flag
     // so the main loop can do something about it:
     if (inChar == '\n') {
@@ -327,12 +337,37 @@ void HandleIncomingJson() {
   inChar = NULL; JsonChar = NULL;
   return;      
 }
+
+void readTime() {
+
+    DateTime now = RTC.now();
+    String Year = String(now.year(), DEC);
+    String Month = String(now.month(), DEC);
+    String Day = String(now.day(), DEC);
+    String Hour = String(now.hour(), DEC);
+    String Minutes = String(now.minute(), DEC);
+    String Seconds = String(now.second(), DEC);
+    TimeStr = Year + "/" + Month + "/" + Day + ":" + Hour + ":" + Minutes + ":" + Seconds;
+    // Debugging
+    // Serial.print(TimeStr);
+    // Serial.println();
+
+}
+
+
 void setup() {
     // initialize both serial ports:
     Serial.begin(9600); // Debugging
     delay(1000);
     Serial1.begin(115200); // Serial for esp8266
     delay(1000);
+    Wire.begin(); // start I2C & RTC
+    RTC.begin();
+    if (! RTC.isrunning()) {
+      Serial.println("RTC is NOT running!");
+      // following line sets the RTC to the date & time this sketch was compiled
+      //RTC.adjust(DateTime(__DATE__, __TIME__));
+    }
     // initialize digital pin 13-11 as an output (for LEDs)
     pinMode(13, OUTPUT); // Main lights leds
     pinMode(12, OUTPUT); // Direction lights
@@ -358,6 +393,7 @@ void loop() {
     // DHT Sensor reporting
     if (currentMillis - previousMillis >= interval) {
       // save the last time of sensor reporting
+      readTime();
       previousMillis = currentMillis;    
       JsonReportSensorDHT();
       if (motor_active == false) {JsonReportSensorDistance(); JsonReportSensorEdge();} // slow down reporting frequency in static cases
@@ -366,6 +402,7 @@ void loop() {
     if (motor_active == true) { // speed up reporting frequency in case of moving
       currentMillis = millis();
       if (currentMillis - mStartMillis >= sensor_moving_reports ) {
+        readTime();
         JsonReportSensorDistance();
         JsonReportSensorEdge();
       }
