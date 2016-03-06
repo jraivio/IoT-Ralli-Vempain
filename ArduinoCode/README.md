@@ -16,7 +16,8 @@
 - [Ultrasonic HC-SR04 library for Arduino by J.Rodrigo] (https://github.com/JRodrigoTech/Ultrasonic-HC-SR04)    
 - [RTC DS1307 library by adafruit] (https://github.com/adafruit/RTClib)    
 
-- [The library bundle can be copied to your local ...'Arduino/libraries' folder as such or alternatively you could download the latest versions from the original github location.] (https://github.com/jraivio/IoT-Ralli-Vempain/tree/master/ArduinoCode/libraries)     
+
+[The library bundle can be copied to your local ...'Arduino/libraries' folder as such or alternatively you could download the latest versions from the original github location.] (https://github.com/jraivio/IoT-Ralli-Vempain/tree/master/ArduinoCode/libraries)     
 
 **Following functions in use:**  
 - `JsonReportSensorDHT()`: // DHT11 sensor data reader function & json report creation    
