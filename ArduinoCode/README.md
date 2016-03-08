@@ -15,6 +15,7 @@
 - [RFID Card reader MFRC522, by Miguel Balboa] (https://github.com/miguelbalboa/rfid)    
 - [Ultrasonic HC-SR04 library for Arduino by J.Rodrigo] (https://github.com/JRodrigoTech/Ultrasonic-HC-SR04)    
 - [RTC DS1307 library by Adafruit] (https://github.com/adafruit/RTClib)    
+- [Gyroscope + accelerometer MPU-6050 library for Arduino by Jeff Rowberg] (https://github.com/jrowberg/i2cdevlib)
 
 
 [The library bundle can be copied to your local ...'Arduino/libraries' folder as such or alternatively you could download the latest versions from the original github location.] (https://github.com/jraivio/IoT-Ralli-Vempain/tree/master/ArduinoCode/libraries)     
@@ -24,7 +25,8 @@
 - `JsonReportSensorRFID()`: // RFID card sensor reader function & json report creation    
 - `JsonReportSensorEdge()`: // Edge sensor reader function & json report creation    
 - `JsonReportSensorDistance()`: // Ultrasonic distance sensor reader function & json report creation    
-- `Motor()`:  // Motor control functions, adapted for L298N    
+- `JsonReportSensorAccAndGyro()` : // Gyroscope + accelerometer reader function & json report creation    
+- `driveMotor()`:  // Motor control functions, adapted for L298N    
 - `serialEvent1()`: // Monitoring new serial events from esp  
 - `HandleIncommingJson()`: // json parser for incoming commands from esp    
 - `setup()`: // Standard Arduino function to setup the system    
