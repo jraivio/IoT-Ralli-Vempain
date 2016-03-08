@@ -96,7 +96,7 @@ int16_t gx, gy, gz;
 Ultrasonic ultrasonic(TRIG_PIN,ECHO_PIN); 
 
 // Edge sensor pinouts
-#define right_edge 24 // Right sensor
+#define right_edge 23 // Right sensor
 #define left_edge 22 // Left sensor
 
 // Motor driver Setup
