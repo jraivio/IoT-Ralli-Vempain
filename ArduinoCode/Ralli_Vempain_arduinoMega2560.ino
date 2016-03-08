@@ -64,6 +64,29 @@ MFRC522::MIFARE_Key key;
 // Init array that will store new NUID 
 byte nuidPICC[3];
 
+/*
+ * Gyroscope + accelerometer MPU-6050 library for Arduino by Jeff Rowberg
+ * https://github.com/jrowberg/i2cdevlib
+ * 
+ */
+#include <I2Cdev.h>
+#include <MPU6050.h>
+
+// Arduino Wire library is required if I2Cdev I2CDEV_ARDUINO_WIRE implementation
+// is used in I2Cdev.h
+#if I2CDEV_IMPLEMENTATION == I2CDEV_ARDUINO_WIRE
+    #include "Wire.h"
+#endif
+
+// We use I2C address 0x69 as the default (0x68) is used by RTC
+// Due to this AD0 pin must be pulled high
+MPU6050 accelgyro(0x69);
+
+// Global variables to store the values
+int16_t ax, ay, az;
+int16_t gx, gy, gz;
+
+
 // Ultrasonic HC-SR04 library for Arduino by J.Rodrigo https://github.com/JRodrigoTech/Ultrasonic-HC-SR04
 // Json description: https://github.com/jraivio/IoT-Ralli-Vempain/wiki
 // Max distance 51 cm
@@ -153,7 +176,41 @@ void JsonReportSensorDistance(){
   Serial1.println(JointJson);
   return;
 }  
-void JsonReportSensorACC(){}       // TBD
+/*
+ *   Read accelerometer and gyroscope raw values and send them
+ *   to ESP
+ * 
+ */
+void JsonReportSensorAccAndGyro(){
+  // read raw accel/gyro measurements from device
+  accelgyro.getMotion6(&ax, &ay, &az, &gx, &gy, &gz);
+
+  // Construct json
+  StaticJsonBuffer<512> jsonOutBuffer;   // 514 B
+  String rootJson = ""; 
+  String arrayJson = "";
+  JsonObject& root = jsonOutBuffer.createObject();
+  
+  root["sensor"] = "acc_gyro"; 
+  root["time"] =  TimeStr;
+  JsonArray& array = jsonOutBuffer.createArray();
+  array.add( ax );
+  array.add( ay );
+  array.add( az );
+  array.add( gx );
+  array.add( gy );
+  array.add( gz );
+  
+  root.printTo(rootJson); 
+  array.printTo(arrayJson); 
+  String JointJson = rootJson + ":" + arrayJson + "}";
+  
+  // Debuggung
+  //Serial.println("json string for edge:" + JointJson);
+  
+  // Send to ESP
+  Serial1.println(JointJson);
+}
 
 void JsonReportSensorEdge() {
    StaticJsonBuffer<512> jsonOutBuffer;   // 514 B
@@ -396,7 +453,11 @@ void loop() {
       readTime();
       previousMillis = currentMillis;    
       JsonReportSensorDHT();
-      if (motor_active == false) {JsonReportSensorDistance(); JsonReportSensorEdge();} // slow down reporting frequency in static cases
+      if (motor_active == false) {
+       JsonReportSensorDistance(); 
+       JsonReportSensorEdge();
+       JsonReportSensorAccAndGyro();
+      } // slow down reporting frequency in static cases
       //JsonReportSensorACC();
     }
     if (motor_active == true) { // speed up reporting frequency in case of moving
@@ -405,6 +466,7 @@ void loop() {
         readTime();
         JsonReportSensorDistance();
         JsonReportSensorEdge();
+        JsonReportSensorAccAndGyro();
       }
     }
     // Look for new RFID cards
