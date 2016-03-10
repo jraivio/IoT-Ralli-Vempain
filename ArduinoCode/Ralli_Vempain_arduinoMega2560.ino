@@ -17,7 +17,6 @@
 #define DHTTYPE DHT11   
 DHT dht(DHTPIN, DHTTYPE);
 
-
 // I2C library
 #include <Wire.h>
 // RTC library by adafruit https://github.com/adafruit/RTClib
@@ -86,7 +85,6 @@ MPU6050 accelgyro(0x69);
 int16_t ax, ay, az;
 int16_t gx, gy, gz;
 
-
 // Ultrasonic HC-SR04 library for Arduino by J.Rodrigo https://github.com/JRodrigoTech/Ultrasonic-HC-SR04
 // Json description: https://github.com/jraivio/IoT-Ralli-Vempain/wiki
 // Max distance 51 cm
@@ -117,7 +115,6 @@ int mdelay; // motor delay
 boolean sensor_moving = false;
 int sensor_moving_reports = 500;
 unsigned long sensor_moving_previousMillis = 0;      // will store last time light delay update
-
 // light blinking 
 boolean pin13_blinking = false;
 boolean pin12_blinking = false;
@@ -128,8 +125,6 @@ int pin11_delay;
 unsigned long pin13_previousMillis = 0;      // will store last time light delay update
 unsigned long pin12_previousMillis = 0;      // will store last time light delay update
 unsigned long pin11_previousMillis = 0;      // will store last time light delay update
-
-
 
 void JsonReportSensorDHT() {
  
@@ -204,12 +199,9 @@ void JsonReportSensorAccAndGyro(){
   root.printTo(rootJson); 
   array.printTo(arrayJson); 
   String JointJson = rootJson + ":" + arrayJson + "}";
-  
   // Debuggung
   //Serial.println("json string for edge:" + JointJson);
-  
-  // Send to ESP
-  Serial1.println(JointJson);
+  Serial1.println(JointJson); // Sending to ESP
 }
 
 void JsonReportSensorEdge() {
@@ -408,9 +400,7 @@ void readTime() {
     // Debugging
     // Serial.print(TimeStr);
     // Serial.println();
-
 }
-
 
 void setup() {
     // initialize both serial ports:
@@ -459,7 +449,6 @@ void loop() {
        JsonReportSensorEdge();
        JsonReportSensorAccAndGyro();
       } // slow down reporting frequency in static cases
-      //JsonReportSensorACC();
     }
     if (motor_active == true) { // speed up reporting frequency in case of moving
       currentMillis = millis();
