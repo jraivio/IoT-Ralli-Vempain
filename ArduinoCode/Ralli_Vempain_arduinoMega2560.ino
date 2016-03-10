@@ -436,6 +436,7 @@ void setup() {
     dht.begin(); // Init DHT
     // RFID setup
     SPI.begin(); // Init SPI bus
+    accelgyro.initialize(); //  ACC & Gyro initialization 
     rfid.PCD_Init(); // Init MFRC522 
     for (byte i = 0; i < 6; i++) { key.keyByte[i] = 0xFF; } // RFID byte handling
     // HC-SR04 distance sensor setup (TBD, currently fixed VCC/GND)
