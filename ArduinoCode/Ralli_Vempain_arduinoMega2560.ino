@@ -434,9 +434,9 @@ void setup() {
     pinMode(left_edge,INPUT); // Left sensor
     inputString.reserve(256); // reserve 256 bytes for the inputString:
     dht.begin(); // Init DHT
+    accelgyro.initialize(); //  ACC & Gyro initialization 
     // RFID setup
     SPI.begin(); // Init SPI bus
-    accelgyro.initialize(); //  ACC & Gyro initialization 
     rfid.PCD_Init(); // Init MFRC522 
     for (byte i = 0; i < 6; i++) { key.keyByte[i] = 0xFF; } // RFID byte handling
     // HC-SR04 distance sensor setup (TBD, currently fixed VCC/GND)
